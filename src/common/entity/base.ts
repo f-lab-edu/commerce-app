@@ -24,4 +24,12 @@ export abstract class MyBaseEntity implements IBaseEntity {
 
   @UpdateDateColumn()
   updatedAt?: Date;
+
+  constructor(param?: IBaseEntity) {
+    if (param) {
+      this.id = param.id;
+      this.createdAt = param.createdAt;
+      this.updatedAt = param.updatedAt;
+    }
+  }
 }
