@@ -17,7 +17,7 @@ export class AuthServiceImpl implements AuthService {
     @Inject(UserServiceToken)
     private readonly userService: UserService,
     @Inject(EncryptionServiceToken)
-    private readonly encryptionService: EncryptionService, // Replace with actual type
+    private readonly encryptionService: EncryptionService,
   ) {}
 
   async signUp(dto: CreateUserDto) {
