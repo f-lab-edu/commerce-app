@@ -1,5 +1,5 @@
 import { instanceToPlain } from 'class-transformer';
-import { IUserEntity, UserEntity } from '../user.entity';
+import { IUserEntity, UserEntity } from '../entity/user.entity';
 import { UserResponseDto } from './user.dto';
 
 export class UserMapper {

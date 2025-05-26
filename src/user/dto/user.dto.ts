@@ -1,7 +1,7 @@
 import { Expose } from 'class-transformer';
 import { BaseResponseDto } from '../../common/dto/base.dto';
 import { TRole } from '../types';
-import { IUserEntity, UserEntity } from '../user.entity';
+import { IUserEntity, UserEntity } from '../entity/user.entity';
 
 type TUserResponseDto = Omit<Required<UserEntity>, 'password'>;
 

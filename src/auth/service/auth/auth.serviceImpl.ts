@@ -9,7 +9,7 @@ import {
   EncryptionService,
   EncryptionServiceToken,
 } from '../encryption/encryption.service';
-import { UserEntity } from '../../../user/user.entity';
+import { UserEntity } from '../../../user/entity/user.entity';
 
 @Injectable()
 export class AuthServiceImpl implements AuthService {

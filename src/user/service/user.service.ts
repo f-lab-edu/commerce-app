@@ -1,6 +1,6 @@
 import { Provider } from '@nestjs/common';
 import { CreateUserDto } from '../interface/create.interface';
-import { UserEntity } from '../user.entity';
+import { UserEntity } from '../entity/user.entity';
 import { UserServiceImpl } from '../user.serviceImpl';
 
 export interface UserService {

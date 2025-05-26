@@ -1,6 +1,7 @@
 import { Column, Entity } from 'typeorm';
-import { TRole } from './types';
-import { IBaseEntity, MyBaseEntity } from '../common/entity/base';
+import { TRole } from '../types';
+import { IBaseEntity, MyBaseEntity } from '../../common/entity/base';
+import { UserConstraints } from './user.constraints';
 
 export interface IUserEntity extends IBaseEntity {
   email: string;
@@ -11,16 +12,29 @@ export interface IUserEntity extends IBaseEntity {
 
 @Entity({ name: 'user' })
 export class UserEntity extends MyBaseEntity implements IUserEntity {
-  @Column({ type: 'varchar', length: 255 })
+  @Column({
+    type: UserConstraints.DB_CONSTRAINTS.TYPE_VARCHAR,
+    length: UserConstraints.EMAIL.MAX_LENGTH,
+  })
   email: string;
 
-  @Column()
+  @Column({
+    type: UserConstraints.DB_CONSTRAINTS.TYPE_VARCHAR,
+    length: UserConstraints.NAME.MAX_LENGTH,
+  })
   name: string;
 
-  @Column()
+  @Column({
+    type: UserConstraints.DB_CONSTRAINTS.TYPE_VARCHAR,
+    length: UserConstraints.PASSWORD.HASHED_MAX_LENGTH,
+  })
   password: string;
 
-  @Column({ type: 'varchar', length: 10, default: 'buyer' })
+  @Column({
+    type: UserConstraints.DB_CONSTRAINTS.TYPE_VARCHAR,
+    length: 10,
+    default: 'buyer',
+  })
   role: TRole = 'buyer';
 
   static from(param: IUserEntity) {
