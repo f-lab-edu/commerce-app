@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import {
   UserService,
   UserServiceToken,
@@ -10,6 +10,7 @@ import {
   EncryptionServiceToken,
 } from '../encryption/encryption.service';
 import { UserEntity } from '../../../user/entity/user.entity';
+import { SignUpPolicy } from '../../policy/signUp.policy';
 
 @Injectable()
 export class AuthServiceImpl implements AuthService {
@@ -18,14 +19,12 @@ export class AuthServiceImpl implements AuthService {
     private readonly userService: UserService,
     @Inject(EncryptionServiceToken)
     private readonly encryptionService: EncryptionService,
+    private readonly signUpPolicy: SignUpPolicy,
   ) {}
 
   async signUp(dto: CreateUserDto) {
-    const { email, password } = dto;
-
-    if (email === password) {
-      throw new BadRequestException('비밀번호는 이메일과 같을 수 없습니다.');
-    }
+    await this.signUpPolicy.validate(dto);
+    const { password } = dto;
     const hashedPassword = await this.encryptionService.hash(password);
     const dtoWithHashedPassword: Omit<UserEntity, 'role'> = {
       ...dto,
