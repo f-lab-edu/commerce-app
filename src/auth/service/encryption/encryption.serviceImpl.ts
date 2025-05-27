@@ -8,20 +8,24 @@ export class EncryptionServiceImpl {
 
   private toDecimalInteger(strNum: string) {
     const decimalRadix = 10;
-    return parseInt(strNum, decimalRadix);
+    const parsed = parseInt(strNum, decimalRadix);
+    if (isNaN(parsed)) {
+      throw new Error(`${strNum}는 문자타입의 숫자가 아닙니다.`);
+    }
+    return parsed;
   }
 
-  async hash(password: string): Promise<string> {
+  private getSaltRound() {
     const saltRound = this.configService.get<string>('SALTROUND');
     if (!saltRound) {
       throw new Error('SaltRound가 정의되지 않았습니다.');
     }
+    return saltRound;
+  }
 
+  async hash(password: string): Promise<string> {
+    const saltRound = this.getSaltRound();
     const parsed = this.toDecimalInteger(saltRound);
-    if (isNaN(parsed)) {
-      throw new Error(`${saltRound}는 문자타입의 숫자가 아닙니다.`);
-    }
-
     return await bcrypt.hash(password, parsed);
   }
 }

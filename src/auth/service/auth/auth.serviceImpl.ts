@@ -10,7 +10,9 @@ import {
   EncryptionServiceToken,
 } from '../encryption/encryption.service';
 import { UserEntity } from '../../../user/entity/user.entity';
-import { SignUpPolicy } from '../../policy/signUp.policy';
+import { SignUpPolicyToken } from '../../policy/signUp/signUp.policy';
+import { IPolicy } from '../../../common/policy/policy';
+import { SignUpDto } from '../../dto/signup.dto';
 
 @Injectable()
 export class AuthServiceImpl implements AuthService {
@@ -19,7 +21,8 @@ export class AuthServiceImpl implements AuthService {
     private readonly userService: UserService,
     @Inject(EncryptionServiceToken)
     private readonly encryptionService: EncryptionService,
-    private readonly signUpPolicy: SignUpPolicy,
+    @Inject(SignUpPolicyToken)
+    private readonly signUpPolicy: IPolicy<SignUpDto>,
   ) {}
 
   async signUp(dto: CreateUserDto) {
