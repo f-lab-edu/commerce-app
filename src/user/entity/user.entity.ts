@@ -2,21 +2,26 @@ import { Column, Entity } from 'typeorm';
 import { TRole } from '../types';
 import { IBaseEntity, MyBaseEntity } from '../../common/entity/base';
 import { UserConstraints } from './user.constraints';
+import { UserEmailVO } from '../vo/email.vo';
+import { EmailTransformer } from './emailVO.transformer';
 
 export interface IUserEntity extends IBaseEntity {
-  email: string;
+  email: UserEmailVO;
   name: string;
   password: string;
   role?: TRole;
 }
 
+export type PersistedUserEntity = Required<IUserEntity>;
+
 @Entity({ name: 'user' })
 export class UserEntity extends MyBaseEntity implements IUserEntity {
   @Column({
     type: UserConstraints.DB_CONSTRAINTS.TYPE_VARCHAR,
-    length: UserConstraints.EMAIL.MAX_LENGTH,
+    length: UserEmailVO.constraints.maxLen,
+    transformer: new EmailTransformer(),
   })
-  email: string;
+  email: UserEmailVO;
 
   @Column({
     type: UserConstraints.DB_CONSTRAINTS.TYPE_VARCHAR,
@@ -37,17 +42,19 @@ export class UserEntity extends MyBaseEntity implements IUserEntity {
   })
   role: TRole = 'buyer';
 
-  static from(param: IUserEntity) {
-    const newUser = new UserEntity();
-    const { createdAt, id, updatedAt, email, name, password, role } = param;
-    newUser.id = id;
-    newUser.createdAt = createdAt;
-    newUser.updatedAt = updatedAt;
+  constructor(param?: IUserEntity) {
+    super(param);
+    if (param) {
+      const { email, name, password, role } = param;
+      this.email = email;
+      this.name = name;
+      this.password = password;
+      this.role = role ?? 'buyer';
+    }
+  }
 
-    newUser.email = email;
-    newUser.name = name;
-    newUser.password = password;
-    newUser.role = role ?? 'buyer';
+  static from(param: IUserEntity) {
+    const newUser = new UserEntity(param);
 
     return newUser;
   }

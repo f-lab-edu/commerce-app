@@ -11,8 +11,10 @@ import {
 } from '../encryption/encryption.service';
 import { UserEntity } from '../../../user/entity/user.entity';
 import { SignUpPolicyToken } from '../../policy/signUp/signUp.policy';
-import { IPolicy } from '../../../common/policy/policy';
 import { SignUpDto } from '../../dto/signup.dto';
+import { IPolicyService } from '../../../common/policy/policy';
+import { UserEmailVO } from '../../../user/vo/email.vo';
+import { UserMapper } from '../../../user/dto/user.mapper';
 
 @Injectable()
 export class AuthServiceImpl implements AuthService {
@@ -22,17 +24,20 @@ export class AuthServiceImpl implements AuthService {
     @Inject(EncryptionServiceToken)
     private readonly encryptionService: EncryptionService,
     @Inject(SignUpPolicyToken)
-    private readonly signUpPolicy: IPolicy<SignUpDto>,
+    private readonly signUpPolicyService: IPolicyService<SignUpDto>,
   ) {}
 
   async signUp(dto: CreateUserDto) {
-    await this.signUpPolicy.validate(dto);
-    const { password } = dto;
+    await this.signUpPolicyService.validate(dto);
+
+    const { password, email, name } = dto;
     const hashedPassword = await this.encryptionService.hash(password);
-    const dtoWithHashedPassword: Omit<UserEntity, 'role'> = {
-      ...dto,
+
+    const dtoWithHashedPassword: CreateUserDto = new CreateUserDto({
+      email,
+      name,
       password: hashedPassword,
-    };
+    });
 
     return await this.userService.create(dtoWithHashedPassword);
   }

@@ -1,10 +1,10 @@
 import { Provider } from '@nestjs/common';
-import { UserEntity } from '../../../user/entity/user.entity';
+import { PersistedUserEntity } from '../../../user/entity/user.entity';
 import { AuthServiceImpl } from './auth.serviceImpl';
-import { CreateUserDto } from '../../../user/interface/create.interface';
+import { ICreateUserDto } from '../../../user/interface/create.interface';
 
 export interface AuthService {
-  signUp: (dto: CreateUserDto) => Promise<UserEntity>;
+  signUp: (dto: ICreateUserDto) => Promise<PersistedUserEntity>;
 }
 
 export const AuthServiceToken = Symbol('AuthService');

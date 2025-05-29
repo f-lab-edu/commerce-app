@@ -15,4 +15,11 @@ export abstract class BaseResponseDto {
 
   @Expose()
   updatedAt: Date;
+
+  constructor(param: IBaseResponseDto) {
+    const { createdAt, id, updatedAt } = param;
+    this.id = id;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+  }
 }

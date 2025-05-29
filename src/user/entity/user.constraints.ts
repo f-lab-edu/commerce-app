@@ -10,7 +10,7 @@ export class UserConstraints extends CommonConstraints {
     MIN_LENGTH: 1,
     MAX_LENGTH: 20,
     get alphaNumericBetweenOneToTwentyLengthRule(): string {
-      return `^[a-zA-Z0-9]{${this.MIN_LENGTH}, ${this.MAX_LENGTH}}`;
+      return `^[a-zA-Z0-9]{${this.MIN_LENGTH},${this.MAX_LENGTH}}$`;
     },
   };
 
@@ -24,7 +24,7 @@ export class UserConstraints extends CommonConstraints {
       const numberSpecialCharPattern = '(?=.*\\d)(?=.*[!@#$%^&*?_])';
       const allCharsInPassword = '[A-Za-z\\d!@#$%^&*?_]';
       const OR = '|';
-      const BETWEEN = (min: number, max: number) => `{${min},${max}}`;
+      const BETWEEN = (min: number, max: number) => `{${min},${max}}$`;
 
       return (
         '^(?:' +

@@ -1,14 +1,9 @@
 import { Expose } from 'class-transformer';
 import { BaseResponseDto } from '../../common/dto/base.dto';
 import { TRole } from '../types';
-import { IUserEntity, UserEntity } from '../entity/user.entity';
+import { PersistedUserEntity, UserEntity } from '../entity/user.entity';
 
-type TUserResponseDto = Omit<Required<UserEntity>, 'password'>;
-
-export class UserResponseDto
-  extends BaseResponseDto
-  implements TUserResponseDto
-{
+export class UserResponseDto extends BaseResponseDto {
   @Expose()
   email: string;
 
@@ -18,20 +13,16 @@ export class UserResponseDto
   @Expose()
   role: TRole;
 
-  static from(p: IUserEntity): UserResponseDto {
-    const dto = new UserResponseDto();
+  constructor(param: PersistedUserEntity) {
+    super(param);
+    const { email, name, role } = param;
+    this.email = email.email;
+    this.name = name;
+    this.role = role;
+  }
 
-    if (!p.id || !p.createdAt || !p.updatedAt) {
-      throw new Error('id,createdAt,updatedAt이 undefined입니다.');
-    }
-
-    dto.id = p.id;
-    dto.createdAt = p.createdAt;
-    dto.updatedAt = p.updatedAt;
-
-    dto.email = p.email;
-    dto.name = p.name;
-    dto.role = p.role!;
+  static from(p: PersistedUserEntity): UserResponseDto {
+    const dto = new UserResponseDto(p);
 
     return dto;
   }

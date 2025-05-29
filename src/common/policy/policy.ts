@@ -1,10 +1,10 @@
 import { BadRequestException } from '@nestjs/common';
 
-export interface IPolicy<T> {
+export interface IPolicyService<T> {
   validate(dto: T): Promise<void>;
 }
 
-export abstract class BasePolicy<T> implements IPolicy<T> {
+export abstract class BasePolicyService<T> implements IPolicyService<T> {
   protected validationTarget: T;
 
   #init(data: T): void {
