@@ -1,5 +1,4 @@
 import {
-  BaseEntity,
   CreateDateColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -27,9 +26,10 @@ export abstract class MyBaseEntity implements IBaseEntity {
 
   constructor(param?: IBaseEntity) {
     if (param) {
-      this.id = param.id;
-      this.createdAt = param.createdAt;
-      this.updatedAt = param.updatedAt;
+      const { createdAt, id, updatedAt } = param;
+      this.id = id;
+      this.createdAt = createdAt;
+      this.updatedAt = updatedAt;
     }
   }
 }

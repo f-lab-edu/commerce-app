@@ -1,21 +1,36 @@
 import { instanceToPlain } from 'class-transformer';
-import { IUserEntity, UserEntity } from '../user.entity';
+import {
+  IUserEntity,
+  PersistedUserEntity,
+  UserEntity,
+} from '../entity/user.entity';
 import { UserResponseDto } from './user.dto';
+import { IUserInput } from '../interface/create.interface';
+import { UserNameVO } from '../vo/name.vo';
+import { UserEmailVO } from '../vo/email.vo';
+import { UserHashedPasswordVO } from '../vo/hashedPassword.vo';
 
 export class UserMapper {
-  static toResponseDto(entity: IUserEntity): UserResponseDto {
+  static toResponseDto(entity: PersistedUserEntity): UserResponseDto {
     const userResponseDto = UserResponseDto.from(entity);
     return instanceToPlain(userResponseDto) as UserResponseDto;
   }
 
-  static toEntity(partial: Partial<IUserEntity>) {
-    const { name, email, password } = partial;
+  static toEntity(dto: IUserInput) {
+    const { name, email, password } = dto;
 
-    if (!name || !email || !password) {
-      throw new Error('필수필드가 누락되어있습니다.');
+    const requiredFields = { name, email, password };
+    const undefinedFields = Object.entries(requiredFields)
+      .filter(([key, val]) => val === undefined)
+      .map(([key]) => key);
+    if (undefinedFields.length > 0) {
+      throw new Error(`${undefinedFields.join(', ')}이 undefined입니다. `);
     }
-
-    const p: IUserEntity = { name, email, password };
+    const p: IUserEntity = {
+      name: new UserNameVO(name),
+      email: new UserEmailVO(email),
+      password: new UserHashedPasswordVO(password),
+    };
     return UserEntity.from(p);
   }
 }

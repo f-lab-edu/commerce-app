@@ -1,6 +1,16 @@
-import { Body, Controller, Inject, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Inject,
+  Post,
+} from '@nestjs/common';
 import { SignUpDto } from './dto/signup.dto';
-import { AuthService, AuthServiceToken } from './service/auth/auth.service';
+import {
+  AuthApplicationService,
+  AuthApplicationServiceToken,
+} from './service/auth/authApplication.service';
 import { UserMapper } from '../user/dto/user.mapper';
 import {
   VerificationService,
@@ -11,16 +21,16 @@ import { EmailVerificationCodeDto } from '../verification/dto/sendCode.dto';
 @Controller('auth')
 export class AuthController {
   constructor(
-    @Inject(AuthServiceToken)
-    private readonly authService: AuthService,
-
+    @Inject(AuthApplicationServiceToken)
+    private readonly authApplicationService: AuthApplicationService,
     @Inject(VerificationServiceToken)
-    private readonly verificationService: VerificationService, // Replace with actual type
+    private readonly verificationService: VerificationService,
   ) {}
 
   @Post('sign-up')
+  @HttpCode(HttpStatus.CREATED)
   async signUp(@Body() signUpDto: SignUpDto) {
-    const user = await this.authService.signUp(signUpDto);
+    const user = await this.authApplicationService.signUp(signUpDto);
 
     return UserMapper.toResponseDto(user);
   }
