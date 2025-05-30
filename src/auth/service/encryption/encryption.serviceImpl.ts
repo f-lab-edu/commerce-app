@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
+import { UserHashedPasswordVO } from '../../../user/vo/hashedPassword.vo';
+import { UserRawPasswordVO } from '../../../user/vo/rawPassword.vo';
 
 @Injectable()
 export class EncryptionServiceImpl {
   constructor(private readonly configService: ConfigService) {}
 
-  private toDecimalInteger(strNum: string) {
+  #toDecimalInteger(strNum: string) {
     const decimalRadix = 10;
     const parsed = parseInt(strNum, decimalRadix);
     if (isNaN(parsed)) {
@@ -15,7 +17,7 @@ export class EncryptionServiceImpl {
     return parsed;
   }
 
-  private getSaltRound() {
+  #getSaltRound() {
     const saltRound = this.configService.get<string>('SALTROUND');
     if (!saltRound) {
       throw new Error('SaltRound가 정의되지 않았습니다.');
@@ -23,9 +25,10 @@ export class EncryptionServiceImpl {
     return saltRound;
   }
 
-  async hash(password: string): Promise<string> {
-    const saltRound = this.getSaltRound();
-    const parsed = this.toDecimalInteger(saltRound);
-    return await bcrypt.hash(password, parsed);
+  async hash(password: UserRawPasswordVO): Promise<UserHashedPasswordVO> {
+    const saltRound = this.#getSaltRound();
+    const parsed = this.#toDecimalInteger(saltRound);
+    const hashed = await bcrypt.hash(password.rawPassword, parsed);
+    return new UserHashedPasswordVO(hashed);
   }
 }

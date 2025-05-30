@@ -6,11 +6,13 @@ import { UserEmailVO } from '../vo/email.vo';
 import { EmailVOTransformer } from './emailVO.transformer';
 import { UserNameVO } from '../vo/name.vo';
 import { NameVOTransformer } from './nameVO.transformer';
+import { UserHashedPasswordVO } from '../vo/hashedPassword.vo';
+import { HashedPasswordVOTransformer } from './hashedPasswordVO.transformer';
 
 export interface IUserEntity extends IBaseEntity {
   email: UserEmailVO;
   name: UserNameVO;
-  password: string;
+  password: UserHashedPasswordVO;
   role?: TRole;
 }
 
@@ -34,9 +36,10 @@ export class UserEntity extends MyBaseEntity implements IUserEntity {
 
   @Column({
     type: UserConstraints.DB_CONSTRAINTS.TYPE_VARCHAR,
-    length: UserConstraints.PASSWORD.HASHED_MAX_LENGTH,
+    length: UserHashedPasswordVO.constraints.maxLen,
+    transformer: new HashedPasswordVOTransformer(),
   })
-  password: string;
+  password: UserHashedPasswordVO;
 
   @Column({
     type: UserConstraints.DB_CONSTRAINTS.TYPE_VARCHAR,

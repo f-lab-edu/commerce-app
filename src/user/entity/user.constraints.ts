@@ -1,14 +1,6 @@
 import { CommonConstraints } from '../../common/entity/base.constraints';
 
 export class UserConstraints extends CommonConstraints {
-  static readonly NAME = {
-    MIN_LENGTH: 1,
-    MAX_LENGTH: 20,
-    get alphaNumericBetweenOneToTwentyLengthRule(): string {
-      return `^[a-zA-Z0-9]{${this.MIN_LENGTH},${this.MAX_LENGTH}}$`;
-    },
-  };
-
   static readonly PASSWORD = {
     MIN_LENGTH: 8,
     MAX_LENGTH: 20,

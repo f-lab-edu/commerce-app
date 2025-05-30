@@ -1,11 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
 
-interface IPropertyConstraints {
-  minLen?: number;
-  maxLen?: number;
-  pattern?: RegExp | string;
-}
-
 export class UserNameVO {
   static readonly constraints = {
     minLen: 1,
@@ -13,7 +7,7 @@ export class UserNameVO {
     get alphaNumericBetweenOneToTwentyLengthPattern(): string {
       return `^[a-zA-Z0-9]{${this.minLen},${this.maxLen}}$`;
     },
-  };
+  } as const;
 
   #name: string;
 
@@ -28,7 +22,7 @@ export class UserNameVO {
     const { minLen, maxLen } = UserNameVO.constraints;
     if (name.length < minLen || name.length > maxLen) {
       throw new BadRequestException(
-        `이메일의 길이는 ${minLen} ~ ${maxLen}자 이어야 합니다.}`,
+        `비밀번호의 길이는 ${minLen} ~ ${maxLen}자 이어야 합니다.}`,
       );
     }
   }

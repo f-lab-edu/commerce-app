@@ -8,6 +8,7 @@ import { UserResponseDto } from './user.dto';
 import { IUserInput } from '../interface/create.interface';
 import { UserNameVO } from '../vo/name.vo';
 import { UserEmailVO } from '../vo/email.vo';
+import { UserHashedPasswordVO } from '../vo/hashedPassword.vo';
 
 export class UserMapper {
   static toResponseDto(entity: PersistedUserEntity): UserResponseDto {
@@ -28,7 +29,7 @@ export class UserMapper {
     const p: IUserEntity = {
       name: new UserNameVO(name),
       email: new UserEmailVO(email),
-      password,
+      password: new UserHashedPasswordVO(password),
     };
     return UserEntity.from(p);
   }

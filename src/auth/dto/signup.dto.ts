@@ -2,6 +2,7 @@ import { IsEmail, IsString, Length, Matches } from 'class-validator';
 import { IUserInput } from '../../user/interface/create.interface';
 import { UserConstraints } from '../../user/entity/user.constraints';
 import { UserEmailVO } from '../../user/vo/email.vo';
+import { UserNameVO } from '../../user/vo/name.vo';
 
 export class SignUpDto implements IUserInput {
   @IsEmail({}, { message: '이메일 형식이 올바르지 않습니다.' })
@@ -12,9 +13,11 @@ export class SignUpDto implements IUserInput {
 
   @IsString()
   @Matches(
-    new RegExp(UserConstraints.NAME.alphaNumericBetweenOneToTwentyLengthRule),
+    new RegExp(
+      UserNameVO.constraints.alphaNumericBetweenOneToTwentyLengthPattern,
+    ),
     {
-      message: `이름은 공백,특수문자를 제외한 숫자,문자 조합 (${UserConstraints.NAME.MIN_LENGTH} ~ ${UserConstraints.NAME.MAX_LENGTH}자)조건을 만족해야합니다.`,
+      message: `이름은 공백,특수문자를 제외한 숫자,문자 조합 (${UserNameVO.constraints.minLen} ~ ${UserNameVO.constraints.maxLen}자)조건을 만족해야합니다.`,
     },
   )
   name: string;
