@@ -14,18 +14,15 @@ export class UserServiceImpl {
   ) {}
 
   async create(dto: CreateUserDto) {
-    const { email, name, password } = dto;
-    const emailVO = new UserEmailVO(email);
-    const user = await this.userRepository.findOneBy({ email: emailVO });
+    const { email } = dto;
+    const user = await this.userRepository.findOneBy({
+      email: new UserEmailVO(email),
+    });
     if (user) {
       throw new BadRequestException(`${email}로 등록한 유저가 이미 있습니다.`);
     }
 
-    const newUser = UserMapper.toEntity({
-      name,
-      password,
-      email: emailVO,
-    });
+    const newUser = UserMapper.toEntity(dto);
 
     return await this.userRepository.save(newUser);
   }

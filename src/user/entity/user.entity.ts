@@ -3,11 +3,13 @@ import { TRole } from '../types';
 import { IBaseEntity, MyBaseEntity } from '../../common/entity/base';
 import { UserConstraints } from './user.constraints';
 import { UserEmailVO } from '../vo/email.vo';
-import { EmailTransformer } from './emailVO.transformer';
+import { EmailVOTransformer } from './emailVO.transformer';
+import { UserNameVO } from '../vo/name.vo';
+import { NameVOTransformer } from './nameVO.transformer';
 
 export interface IUserEntity extends IBaseEntity {
   email: UserEmailVO;
-  name: string;
+  name: UserNameVO;
   password: string;
   role?: TRole;
 }
@@ -19,15 +21,16 @@ export class UserEntity extends MyBaseEntity implements IUserEntity {
   @Column({
     type: UserConstraints.DB_CONSTRAINTS.TYPE_VARCHAR,
     length: UserEmailVO.constraints.maxLen,
-    transformer: new EmailTransformer(),
+    transformer: new EmailVOTransformer(),
   })
   email: UserEmailVO;
 
   @Column({
     type: UserConstraints.DB_CONSTRAINTS.TYPE_VARCHAR,
-    length: UserConstraints.NAME.MAX_LENGTH,
+    length: UserNameVO.constraints.maxLen,
+    transformer: new NameVOTransformer(),
   })
-  name: string;
+  name: UserNameVO;
 
   @Column({
     type: UserConstraints.DB_CONSTRAINTS.TYPE_VARCHAR,

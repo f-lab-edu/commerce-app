@@ -1,11 +1,12 @@
 import { IsEmail, IsString, Length, Matches } from 'class-validator';
-import { ICreateUserDto } from '../../user/interface/create.interface';
+import { IUserInput } from '../../user/interface/create.interface';
 import { UserConstraints } from '../../user/entity/user.constraints';
+import { UserEmailVO } from '../../user/vo/email.vo';
 
-export class SignUpDto implements ICreateUserDto {
+export class SignUpDto implements IUserInput {
   @IsEmail({}, { message: '이메일 형식이 올바르지 않습니다.' })
-  @Length(UserConstraints.EMAIL.MIN_LENGTH, UserConstraints.EMAIL.MAX_LENGTH, {
-    message: `이메일의 길이는 ${UserConstraints.EMAIL.MIN_LENGTH} ~ ${UserConstraints.EMAIL.MAX_LENGTH}입니다.`,
+  @Length(UserEmailVO.constraints.minLen, UserEmailVO.constraints.maxLen, {
+    message: `이메일의 길이는 ${UserEmailVO.constraints.minLen} ~ ${UserEmailVO.constraints.maxLen}입니다.`,
   })
   email: string;
 

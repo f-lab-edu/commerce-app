@@ -5,6 +5,9 @@ import {
   UserEntity,
 } from '../entity/user.entity';
 import { UserResponseDto } from './user.dto';
+import { IUserInput } from '../interface/create.interface';
+import { UserNameVO } from '../vo/name.vo';
+import { UserEmailVO } from '../vo/email.vo';
 
 export class UserMapper {
   static toResponseDto(entity: PersistedUserEntity): UserResponseDto {
@@ -12,18 +15,21 @@ export class UserMapper {
     return instanceToPlain(userResponseDto) as UserResponseDto;
   }
 
-  static toEntity(dto: IUserEntity) {
-    const { name, email: emailVO, password } = dto;
+  static toEntity(dto: IUserInput) {
+    const { name, email, password } = dto;
 
-    const requiredFields = { name, email: emailVO.email, password };
+    const requiredFields = { name, email, password };
     const undefinedFields = Object.entries(requiredFields)
       .filter(([key, val]) => val === undefined)
       .map(([key]) => key);
     if (undefinedFields.length > 0) {
       throw new Error(`${undefinedFields.join(', ')}이 undefined입니다. `);
     }
-
-    const p: IUserEntity = { name, email: emailVO, password };
+    const p: IUserEntity = {
+      name: new UserNameVO(name),
+      email: new UserEmailVO(email),
+      password,
+    };
     return UserEntity.from(p);
   }
 }

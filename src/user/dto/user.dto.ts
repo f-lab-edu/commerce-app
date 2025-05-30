@@ -1,7 +1,7 @@
 import { Expose } from 'class-transformer';
 import { BaseResponseDto } from '../../common/dto/base.dto';
 import { TRole } from '../types';
-import { PersistedUserEntity, UserEntity } from '../entity/user.entity';
+import { PersistedUserEntity } from '../entity/user.entity';
 
 export class UserResponseDto extends BaseResponseDto {
   @Expose()
@@ -17,7 +17,7 @@ export class UserResponseDto extends BaseResponseDto {
     super(param);
     const { email, name, role } = param;
     this.email = email.email;
-    this.name = name;
+    this.name = name.name;
     this.role = role;
   }
 

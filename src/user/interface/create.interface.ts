@@ -1,14 +1,14 @@
-export interface ICreateUserDto {
+export interface IUserInput {
   email: string;
   name: string;
   password: string;
 }
 
-export class CreateUserDto implements ICreateUserDto {
+export class CreateUserDto implements IUserInput {
   #email: string;
   #name: string;
   #password: string;
-  constructor(param: ICreateUserDto) {
+  constructor(param: IUserInput) {
     const { email, name, password } = param;
     this.#email = email;
     this.#name = name;

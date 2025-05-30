@@ -9,12 +9,9 @@ import {
   EncryptionService,
   EncryptionServiceToken,
 } from '../encryption/encryption.service';
-import { UserEntity } from '../../../user/entity/user.entity';
 import { SignUpPolicyToken } from '../../policy/signUp/signUp.policy';
 import { SignUpDto } from '../../dto/signup.dto';
 import { IPolicyService } from '../../../common/policy/policy';
-import { UserEmailVO } from '../../../user/vo/email.vo';
-import { UserMapper } from '../../../user/dto/user.mapper';
 
 @Injectable()
 export class AuthServiceImpl implements AuthService {

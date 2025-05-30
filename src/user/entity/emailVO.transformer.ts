@@ -1,7 +1,7 @@
 import { ValueTransformer } from 'typeorm';
 import { UserEmailVO } from '../vo/email.vo';
 
-export class EmailTransformer implements ValueTransformer {
+export class EmailVOTransformer implements ValueTransformer {
   from(dbValue: string | null | undefined): UserEmailVO | null {
     if (!dbValue) {
       return null;
@@ -10,7 +10,7 @@ export class EmailTransformer implements ValueTransformer {
     try {
       return new UserEmailVO(dbValue);
     } catch (error) {
-      console.error(`${dbValue}로 UserEmailVO 생성을 실패했습니다.`);
+      console.error(`${dbValue}로 ${UserEmailVO.name} 생성을 실패했습니다.`);
       return null;
     }
   }

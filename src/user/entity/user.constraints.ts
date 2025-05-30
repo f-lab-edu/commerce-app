@@ -1,11 +1,6 @@
 import { CommonConstraints } from '../../common/entity/base.constraints';
 
 export class UserConstraints extends CommonConstraints {
-  static readonly EMAIL = {
-    MIN_LENGTH: 1,
-    MAX_LENGTH: 255,
-  };
-
   static readonly NAME = {
     MIN_LENGTH: 1,
     MAX_LENGTH: 20,
