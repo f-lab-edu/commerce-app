@@ -1,5 +1,5 @@
 export class DBConstraints {
-  static readonly TYPE_VARCHAR = 'varchar';
+  static readonly BASIC_STRING = 'varchar';
 }
 
 export class CommonConstraints {
