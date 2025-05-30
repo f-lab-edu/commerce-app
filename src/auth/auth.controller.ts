@@ -17,13 +17,13 @@ import { UserMapper } from '../user/dto/user.mapper';
 export class AuthController {
   constructor(
     @Inject(AuthApplicationServiceToken)
-    private readonly authService: AuthApplicationService,
+    private readonly authApplicationService: AuthApplicationService,
   ) {}
 
   @Post('sign-up')
   @HttpCode(HttpStatus.CREATED)
   async signUp(@Body() signUpDto: SignUpDto) {
-    const user = await this.authService.signUp(signUpDto);
+    const user = await this.authApplicationService.signUp(signUpDto);
 
     return UserMapper.toResponseDto(user);
   }
