@@ -1,8 +1,8 @@
 import { IsEmail, IsString, Length, Matches } from 'class-validator';
 import { IUserInput } from '../../user/interface/create.interface';
-import { UserConstraints } from '../../user/entity/user.constraints';
 import { UserEmailVO } from '../../user/vo/email.vo';
 import { UserNameVO } from '../../user/vo/name.vo';
+import { UserRawPasswordVO } from '../../user/vo/rawPassword.vo';
 
 export class SignUpDto implements IUserInput {
   @IsEmail({}, { message: '이메일 형식이 올바르지 않습니다.' })
@@ -23,8 +23,11 @@ export class SignUpDto implements IUserInput {
   name: string;
 
   @IsString()
-  @Matches(new RegExp(UserConstraints.PASSWORD.atLeastTwoTypesOfPatternRule), {
-    message: `비밀번호는 영문/숫자/특수문자 2가지 이상 조합 (${UserConstraints.PASSWORD.MIN_LENGTH} ~ ${UserConstraints.PASSWORD.MAX_LENGTH}자) 조건을 만족해야 합니다.`,
-  })
+  @Matches(
+    new RegExp(UserRawPasswordVO.constraints.atLeastTwoCombinationsPattern),
+    {
+      message: `비밀번호는 영문/숫자/특수문자 2가지 이상 조합 (${UserRawPasswordVO.constraints.minLen} ~ ${UserRawPasswordVO.constraints.maxLen}자) 조건을 만족해야 합니다.`,
+    },
+  )
   password: string;
 }

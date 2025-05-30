@@ -1,13 +1,13 @@
 import { Column, Entity } from 'typeorm';
 import { TRole } from '../types';
 import { IBaseEntity, MyBaseEntity } from '../../common/entity/base';
-import { UserConstraints } from './user.constraints';
 import { UserEmailVO } from '../vo/email.vo';
 import { EmailVOTransformer } from './emailVO.transformer';
 import { UserNameVO } from '../vo/name.vo';
 import { NameVOTransformer } from './nameVO.transformer';
 import { UserHashedPasswordVO } from '../vo/hashedPassword.vo';
 import { HashedPasswordVOTransformer } from './hashedPasswordVO.transformer';
+import { CommonConstraints } from '../../common/entity/base.constraints';
 
 export interface IUserEntity extends IBaseEntity {
   email: UserEmailVO;
@@ -21,28 +21,28 @@ export type PersistedUserEntity = Required<IUserEntity>;
 @Entity({ name: 'user' })
 export class UserEntity extends MyBaseEntity implements IUserEntity {
   @Column({
-    type: UserConstraints.DB_CONSTRAINTS.TYPE_VARCHAR,
+    type: CommonConstraints.DB_CONSTRAINTS.BASIC_STRING,
     length: UserEmailVO.constraints.maxLen,
     transformer: new EmailVOTransformer(),
   })
   email: UserEmailVO;
 
   @Column({
-    type: UserConstraints.DB_CONSTRAINTS.TYPE_VARCHAR,
+    type: CommonConstraints.DB_CONSTRAINTS.BASIC_STRING,
     length: UserNameVO.constraints.maxLen,
     transformer: new NameVOTransformer(),
   })
   name: UserNameVO;
 
   @Column({
-    type: UserConstraints.DB_CONSTRAINTS.TYPE_VARCHAR,
+    type: CommonConstraints.DB_CONSTRAINTS.BASIC_STRING,
     length: UserHashedPasswordVO.constraints.maxLen,
     transformer: new HashedPasswordVOTransformer(),
   })
   password: UserHashedPasswordVO;
 
   @Column({
-    type: UserConstraints.DB_CONSTRAINTS.TYPE_VARCHAR,
+    type: CommonConstraints.DB_CONSTRAINTS.BASIC_STRING,
     length: 10,
     default: 'buyer',
   })
