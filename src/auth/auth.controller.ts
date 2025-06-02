@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Inject,
   Post,
+  UseInterceptors,
 } from '@nestjs/common';
 import { SignUpDto } from './dto/signup.dto';
 import {
@@ -12,6 +13,8 @@ import {
   AuthApplicationServiceToken,
 } from './service/auth/authApplication.service';
 import { UserMapper } from '../user/dto/user.mapper';
+import { CreateHeaderInterceptor } from '../common/interceptor/create.interceptor';
+import { SuccessWithLocation } from '../common/decorator/successWithLocation.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -21,7 +24,7 @@ export class AuthController {
   ) {}
 
   @Post('sign-up')
-  @HttpCode(HttpStatus.CREATED)
+  @SuccessWithLocation()
   async signUp(@Body() signUpDto: SignUpDto) {
     const user = await this.authApplicationService.signUp(signUpDto);
 

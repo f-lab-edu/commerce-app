@@ -22,7 +22,7 @@ export class UserRawPasswordVO {
         numberSpecialCharPattern +
         ')' +
         allCharsInPassword +
-        BETWEEN(this.MIN_LENGTH, this.MAX_LENGTH)
+        BETWEEN(this.minLen, this.maxLen)
       );
     },
   } as const;
