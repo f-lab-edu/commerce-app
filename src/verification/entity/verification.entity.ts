@@ -1,13 +1,20 @@
-import { Column, Entity } from 'typeorm';
+import { Column } from 'typeorm';
 import { MyBaseEntity } from '../../common/entity/base';
 import { IVerificationEntity } from '../../auth/interface/verification.interface';
+import { CommonConstraints } from '../../common/entity/base.constraints';
+import { VeriCodeVO } from '../vo/code.vo';
+import { VeriCodeVOTransformer } from './vericodeVO.transformer';
 
 export abstract class VerificationEntity
   extends MyBaseEntity
   implements IVerificationEntity
 {
-  @Column({ type: 'varchar', length: 255 })
-  code: string;
+  @Column({
+    type: CommonConstraints.DB_CONSTRAINTS.BASIC_STRING,
+    length: VeriCodeVO.constraints.maxLen,
+    transformer: new VeriCodeVOTransformer(),
+  })
+  code: VeriCodeVO;
 
   @Column({ type: 'boolean', default: false })
   isVerified: boolean;

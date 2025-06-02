@@ -2,8 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { PersistedUserEntity, UserEntity } from '../entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UserMapper } from '../dto/user.mapper';
-import { IUserInput } from '../interface/create.interface';
 import { UserEmailVO } from '../vo/email.vo';
 import { UserService } from './user.service';
 import { UserRegistrationVO } from '../vo/userRegistration.vo';

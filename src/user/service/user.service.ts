@@ -1,5 +1,4 @@
 import { Provider } from '@nestjs/common';
-import { IUserInput } from '../interface/create.interface';
 import { PersistedUserEntity } from '../entity/user.entity';
 import { UserServiceImpl } from './user.serviceImpl';
 import { UserEmailVO } from '../vo/email.vo';

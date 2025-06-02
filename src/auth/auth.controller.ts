@@ -10,12 +10,12 @@ import { SignUpDto } from './dto/signup.dto';
 import {
   AuthApplicationService,
   AuthApplicationServiceToken,
-} from './service/auth/authApplication.service';
+} from './service/auth/auth.applicationService';
 import { UserMapper } from '../user/dto/user.mapper';
 import {
-  VerificationService,
+  VerificationApplicationService,
   VerificationServiceToken,
-} from '../verification/email.service';
+} from '../verification/verification.applicationService';
 import { EmailVerificationCodeDto } from '../verification/dto/sendCode.dto';
 
 @Controller('auth')
@@ -24,7 +24,7 @@ export class AuthController {
     @Inject(AuthApplicationServiceToken)
     private readonly authApplicationService: AuthApplicationService,
     @Inject(VerificationServiceToken)
-    private readonly verificationService: VerificationService,
+    private readonly verificationService: VerificationApplicationService,
   ) {}
 
   @Post('sign-up')
