@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Inject,
   Post,
+  UseInterceptors,
 } from '@nestjs/common';
 import { SignUpDto } from './dto/signup.dto';
 import {
@@ -17,6 +18,7 @@ import {
   VerificationServiceToken,
 } from '../verification/verification.applicationService';
 import { EmailVerificationCodeDto } from '../verification/dto/sendCode.dto';
+import { SuccessWithLocation } from '../common/decorator/successWithLocation.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -28,7 +30,7 @@ export class AuthController {
   ) {}
 
   @Post('sign-up')
-  @HttpCode(HttpStatus.CREATED)
+  @SuccessWithLocation()
   async signUp(@Body() signUpDto: SignUpDto) {
     const user = await this.authApplicationService.signUp(signUpDto);
 

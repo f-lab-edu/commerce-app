@@ -22,7 +22,7 @@ export class UserNameVO {
     const { minLen, maxLen } = UserNameVO.constraints;
     if (name.length < minLen || name.length > maxLen) {
       throw new BadRequestException(
-        `비밀번호의 길이는 ${minLen} ~ ${maxLen}자 이어야 합니다.}`,
+        `이름의 길이는 ${minLen} ~ ${maxLen}자 이어야 합니다.}`,
       );
     }
   }
@@ -33,7 +33,9 @@ export class UserNameVO {
     const nameRegExp = new RegExp(alphaNumericBetweenOneToTwentyLengthPattern);
 
     if (!nameRegExp.test(name)) {
-      throw new BadRequestException(`${name}은 올바른 이름 형식이 아닙니다.`);
+      throw new BadRequestException(
+        `${name}은 올바른 이름 형식이 아닙니다. 이름은 영문/숫자를 포함하여 ${UserNameVO.constraints.minLen} ~ ${UserNameVO.constraints.maxLen}자 이내여야 합니다`,
+      );
     }
   }
 

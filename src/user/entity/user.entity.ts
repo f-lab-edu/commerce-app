@@ -1,5 +1,5 @@
 import { Column, Entity } from 'typeorm';
-import { TRole } from '../types';
+import { TRole, USER_ROLE } from '../types';
 import { IBaseEntity, MyBaseEntity } from '../../common/entity/base';
 import { UserEmailVO } from '../vo/email.vo';
 import { EmailVOTransformer } from './emailVO.transformer';
@@ -44,9 +44,9 @@ export class UserEntity extends MyBaseEntity implements IUserEntity {
   @Column({
     type: CommonConstraints.DB_CONSTRAINTS.BASIC_STRING,
     length: 10,
-    default: 'buyer',
+    default: USER_ROLE.buyer,
   })
-  role: TRole = 'buyer';
+  role: TRole;
 
   constructor(param?: IUserEntity) {
     super(param);
@@ -55,7 +55,7 @@ export class UserEntity extends MyBaseEntity implements IUserEntity {
       this.email = email;
       this.name = name;
       this.password = password;
-      this.role = role ?? 'buyer';
+      this.role = role ?? USER_ROLE.buyer;
     }
   }
 

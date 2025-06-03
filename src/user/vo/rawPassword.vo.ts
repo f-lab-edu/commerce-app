@@ -22,7 +22,7 @@ export class UserRawPasswordVO {
         numberSpecialCharPattern +
         ')' +
         allCharsInPassword +
-        BETWEEN(this.MIN_LENGTH, this.MAX_LENGTH)
+        BETWEEN(this.minLen, this.maxLen)
       );
     },
   } as const;
@@ -49,7 +49,7 @@ export class UserRawPasswordVO {
     const passwordRegExp = new RegExp(atLeastTwoCombinationsPattern);
     if (!passwordRegExp.test(password)) {
       throw new BadRequestException(
-        `${password}은 올바른 비밀번호 형식이 아닙니다.`,
+        `비밀번호는 영문/숫자/특수문자(!@#$%^&*?_) 중 2가지 이상을 조합하여 (${UserRawPasswordVO.constraints.minLen} ~ ${UserRawPasswordVO.constraints.maxLen}자) 조건을 만족해야 합니다.`,
       );
     }
   }

@@ -29,7 +29,7 @@ export class UserEmailVO {
     const emailRegExp = new RegExp(emailPattern);
     if (!emailRegExp.test(email)) {
       throw new BadRequestException(
-        `${email}은 올바른 이메일 형식이 아닙니다.`,
+        `${email}은 올바른 이메일 형식이 아닙니다. 이메일은 유효한 형식이어야합니다. (예: user@example.com) `,
       );
     }
   }

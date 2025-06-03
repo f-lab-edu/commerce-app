@@ -12,15 +12,18 @@ export class EncryptionServiceImpl {
     const decimalRadix = 10;
     const parsed = parseInt(strNum, decimalRadix);
     if (isNaN(parsed)) {
-      throw new Error(`${strNum}는 문자타입의 숫자가 아닙니다.`);
+      throw new Error(`SaltRound는 숫자로 변환할 수 있는 문자열이어야 합니다.`);
     }
     return parsed;
   }
 
   #getSaltRound() {
-    const saltRound = this.configService.get<string>('SALTROUND');
+    const saltRoundEnvKey = 'SALTROUND';
+    const saltRound = this.configService.get<string>(saltRoundEnvKey);
     if (!saltRound) {
-      throw new Error('SaltRound가 정의되지 않았습니다.');
+      throw new Error(
+        `Salt Round 환경변수가 정의되지 않았습니다. ${saltRoundEnvKey} 환경변수를 정의해 주세요. `,
+      );
     }
     return saltRound;
   }
