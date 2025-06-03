@@ -20,11 +20,19 @@ export class UserMapper {
     const { name, email, password } = dto;
 
     const requiredFields = { name, email, password };
+    const isUndefinedFiled = ([key, val]) => val === undefined;
+    const getUndefinedKeys = ([key, val]) => key;
+
     const undefinedFields = Object.entries(requiredFields)
-      .filter(([key, val]) => val === undefined)
-      .map(([key]) => key);
+      .filter(isUndefinedFiled)
+      .map(getUndefinedKeys);
+
+    const undefinedKeysInStr = undefinedFields.join(', ');
+
     if (undefinedFields.length > 0) {
-      throw new Error(`${undefinedFields.join(', ')}이 undefined입니다. `);
+      throw new Error(
+        `${undefinedKeysInStr} 프로퍼티들은 undefined가 되지 않아야합니다. `,
+      );
     }
     const p: IUserEntity = {
       name: new UserNameVO(name),
