@@ -1,6 +1,16 @@
-import { IsEmail } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  availableMethods,
+  TVerificationMethod,
+  VERIFICATION_METHODS,
+} from '../command/sendCode.command';
 
-export class EmailVerificationCodeDto {
-  @IsEmail({}, { message: '이메일 형식이 올바르지 않습니다.' })
-  email: string;
+export class SendVerificationDto {
+  @IsString()
+  @IsNotEmpty()
+  target: string;
+
+  @IsEnum(availableMethods)
+  @IsOptional()
+  method?: TVerificationMethod = VERIFICATION_METHODS.email;
 }

@@ -7,6 +7,7 @@ export class VeriCodeVO {
     get sixDigitPattern() {
       return `^[0-9]{${this.maxLen}}$`;
     },
+    expireInMinute: 5,
   } as const;
 
   private _veriCode: string;

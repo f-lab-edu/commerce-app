@@ -1,8 +1,9 @@
 import { Provider } from '@nestjs/common';
 import { VeriApplicationServiceImpl } from './verification.applicationServiceImpl';
+import { SendCodeCommand } from './command/sendCode.command';
 
 export interface VerificationApplicationService {
-  sendCode: (to: string) => Promise<void>;
+  sendCode: (sendCodeCommand: SendCodeCommand) => Promise<void>;
 }
 
 export const VerificationServiceToken = Symbol(

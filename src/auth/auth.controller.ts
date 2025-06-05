@@ -17,8 +17,9 @@ import {
   VerificationApplicationService,
   VerificationServiceToken,
 } from '../verification/verification.applicationService';
-import { EmailVerificationCodeDto } from '../verification/dto/sendCode.dto';
 import { SuccessWithLocation } from '../common/decorator/successWithLocation.decorator';
+import { SendVerificationDto } from '../verification/dto/sendCode.dto';
+import { SendCodeCommand } from '../verification/command/sendCode.command';
 
 @Controller('auth')
 export class AuthController {
@@ -37,9 +38,10 @@ export class AuthController {
     return UserMapper.toResponseDto(user);
   }
 
-  @Post('email-verification/send')
-  async sendEmailVerification(@Body() dto: EmailVerificationCodeDto) {
-    const { email } = dto;
-    return await this.verificationService.sendCode(email);
+  @Post('verification/send')
+  async sendVerification(@Body() dto: SendVerificationDto) {
+    return await this.verificationService.sendCode(
+      new SendCodeCommand(dto.target),
+    );
   }
 }
