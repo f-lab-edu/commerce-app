@@ -1,10 +1,11 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EmailSender } from './email.service';
-import { EmailOptionVO } from '../vo/emailOption.vo';
+import { EmailSender } from '../email.service';
+import { EmailOptionVO } from '../../vo/emailOption.vo';
 import { ConfigService } from '@nestjs/config';
-import Nodemailer, { Transporter } from 'nodemailer';
+import * as nodemailer from 'nodemailer';
+import { Transporter } from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import { UserEmailVO } from '../../user/vo/email.vo';
+import { UserEmailVO } from '../../../user/vo/email.vo';
 
 @Injectable()
 export class NodeMailerEmailSender implements EmailSender {
@@ -46,7 +47,7 @@ export class NodeMailerEmailSender implements EmailSender {
       user: this.smtpEmail.email,
       pass: this.pass,
     };
-    this.transporter = Nodemailer.createTransport({
+    this.transporter = nodemailer.createTransport({
       host,
       port,
       secure: false,

@@ -1,6 +1,6 @@
 export const VERIFICATION_METHODS = {
   email: 'email',
-  mobile: 'mobile',
+  sms: 'sms',
 } as const;
 
 type _VerificationMethods = typeof VERIFICATION_METHODS;

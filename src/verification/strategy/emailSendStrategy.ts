@@ -1,13 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { VeriSendStrategy } from './veriSendStrategy.interface';
 import { VeriCodeVO } from '../vo/code.vo';
 import { EmailSender } from '../email/email.service';
 import { EmailFactory } from '../email/emailFactory';
 import { UserEmailVO } from '../../user/vo/email.vo';
+import { EmailSenderToken } from '../email/nodemailer/nodemailer.service';
 
 @Injectable()
 export class EmailSendStrategy implements VeriSendStrategy {
-  constructor(private readonly emailSender: EmailSender) {}
+  constructor(
+    @Inject(EmailSenderToken)
+    private readonly emailSender: EmailSender,
+  ) {}
 
   async saveVerification(target: string, code: VeriCodeVO): Promise<void> {}
 
