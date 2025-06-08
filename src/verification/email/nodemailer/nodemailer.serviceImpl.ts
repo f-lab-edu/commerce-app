@@ -13,7 +13,7 @@ export class NodeMailerEmailSender implements EmailSender {
     SMTPTransport.SentMessageInfo,
     SMTPTransport.Options
   >;
-  private smtpEmail: UserEmailVO;
+  private smtpEmail: string;
   private pass: string;
 
   constructor(private readonly configService: ConfigService) {
@@ -31,7 +31,7 @@ export class NodeMailerEmailSender implements EmailSender {
       throw new InternalServerErrorException(message('이메일'));
     }
 
-    this.smtpEmail = new UserEmailVO(smptEmail);
+    this.smtpEmail = smptEmail;
 
     const pass = this.configService.get('TEST_EMAIL_PASS');
     if (!pass) {
@@ -44,7 +44,7 @@ export class NodeMailerEmailSender implements EmailSender {
     const host = 'smtp.naver.com';
     const port = 587;
     const auth = {
-      user: this.smtpEmail.email,
+      user: this.smtpEmail,
       pass: this.pass,
     };
     this.transporter = nodemailer.createTransport({
@@ -59,7 +59,7 @@ export class NodeMailerEmailSender implements EmailSender {
   async sendEmail(emailOption: EmailOptionVO): Promise<void> {
     try {
       await this.transporter.sendMail({
-        from: emailOption.from,
+        from: emailOption.from ?? this.smtpEmail,
         to: emailOption.to.email,
         subject: emailOption.subject,
         html: emailOption.content.html,

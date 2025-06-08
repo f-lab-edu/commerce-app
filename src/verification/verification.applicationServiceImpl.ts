@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { VerificationApplicationService } from './verification.applicationService';
 import { SendCodeCommand } from './command/sendCode.command';
-import { VeriSendStrategy } from './strategy/veriSendStrategy.interface';
 import { VeriStrategyFactory } from './strategy/strategy.factory';
+import { VeriCodeVO } from './vo/code.vo';
 
 @Injectable()
 export class VeriApplicationServiceImpl
@@ -13,5 +13,7 @@ export class VeriApplicationServiceImpl
   async sendCode(sendCodeCommand: SendCodeCommand) {
     const { method, target } = sendCodeCommand;
     const verificationStrategy = this.veriStrategyFactory.getStrategy(method);
+    const veriCode = new VeriCodeVO(VeriCodeVO.generate());
+    await verificationStrategy.send(target, veriCode);
   }
 }
