@@ -5,7 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 import { Transporter } from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import { UserEmailVO } from '../../../user/vo/email.vo';
+import { EmailSendException } from '../../../common/exception/service.exception';
 
 @Injectable()
 export class NodeMailerEmailSender implements EmailSender {
@@ -66,7 +66,7 @@ export class NodeMailerEmailSender implements EmailSender {
       });
     } catch (error) {
       console.error(error);
-      throw new InternalServerErrorException(
+      throw new EmailSendException(
         `이메일 발송에 실패했습니다. ${error.message}`,
       );
     }

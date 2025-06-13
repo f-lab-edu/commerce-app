@@ -1,11 +1,9 @@
 import {
   Body,
   Controller,
-  HttpCode,
-  HttpStatus,
   Inject,
+  InternalServerErrorException,
   Post,
-  UseInterceptors,
 } from '@nestjs/common';
 import { SignUpDto } from './dto/signup.dto';
 import {
@@ -20,6 +18,7 @@ import {
 import { SuccessWithLocation } from '../common/decorator/successWithLocation.decorator';
 import { SendVerificationDto } from '../verification/dto/sendCode.dto';
 import { SendCodeCommand } from '../verification/command/sendCode.command';
+import { VerificationMapper } from '../verification/dto/veri.mapper';
 
 @Controller('auth')
 export class AuthController {
@@ -40,8 +39,9 @@ export class AuthController {
 
   @Post('verification/send')
   async sendVerification(@Body() dto: SendVerificationDto) {
-    return await this.verificationService.sendCode(
+    const emailVeri = await this.verificationService.sendCode(
       new SendCodeCommand(dto.target),
     );
+    return VerificationMapper.toResponseDto(emailVeri!);
   }
 }

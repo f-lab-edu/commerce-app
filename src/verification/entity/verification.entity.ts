@@ -4,6 +4,7 @@ import { IVerificationEntity } from '../../auth/interface/verification.interface
 import { CommonConstraints } from '../../common/entity/base.constraints';
 import { VeriCodeVO } from '../vo/code.vo';
 import { VeriCodeVOTransformer } from './vericodeVO.transformer';
+import { TVerificationStatus, VERIFICATION_STATUS } from './types';
 
 export abstract class VerificationEntity
   extends MyBaseEntity
@@ -16,8 +17,12 @@ export abstract class VerificationEntity
   })
   code: VeriCodeVO;
 
-  @Column({ type: 'boolean', default: false })
-  isVerified: boolean;
+  @Column({
+    type: 'enum',
+    default: VERIFICATION_STATUS.PENDING,
+    enum: VERIFICATION_STATUS,
+  })
+  status: TVerificationStatus;
 
   @Column({ type: 'datetime' })
   expiredAt: Date;
@@ -25,13 +30,17 @@ export abstract class VerificationEntity
   @Column({ type: 'datetime', nullable: true })
   verifiedAt: Date | null;
 
+  @Column({ type: 'text', nullable: true })
+  errorMessage: string | null;
+
   constructor(param?: IVerificationEntity) {
     super(param);
     if (param) {
       this.code = param.code;
-      this.isVerified = param.isVerified ?? false;
+      this.status = param.status ?? VERIFICATION_STATUS.PENDING;
       this.expiredAt = param.expiredAt;
       this.verifiedAt = param.verifiedAt;
+      this.errorMessage = param.errorMessage;
     }
   }
 }

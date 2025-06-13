@@ -1,5 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { randomInt } from 'crypto';
+import * as dayjs from 'dayjs';
 
 export class VeriCodeVO {
   static readonly constraints = {
@@ -28,14 +29,22 @@ export class VeriCodeVO {
   }
 
   private _veriCode: string;
+  private _expiredAt: Date;
 
   constructor(code: string) {
     this.validateLength(code);
     this.validatePattern(code);
     this._veriCode = code;
+    this.setExpiredAt();
   }
 
-  private validateLength(code) {
+  private setExpiredAt() {
+    this._expiredAt = dayjs()
+      .add(VeriCodeVO.constraints.expireInMinute, 'minute')
+      .toDate();
+  }
+
+  private validateLength(code: string) {
     const { maxLen } = VeriCodeVO.constraints;
     if (code.length !== maxLen) {
       throw new BadRequestException(`인증코드는  ${maxLen}자 이어야 합니다.}`);
@@ -52,5 +61,9 @@ export class VeriCodeVO {
 
   get veriCode(): string {
     return this._veriCode;
+  }
+
+  get expiredAt(): Date {
+    return this._expiredAt;
   }
 }

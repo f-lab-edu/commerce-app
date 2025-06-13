@@ -9,6 +9,9 @@ export interface IEmailVerificationEntity extends IVerificationEntity {
   email: UserEmailVO;
 }
 
+export type PersistedEmailVerificationEntity =
+  Required<IEmailVerificationEntity>;
+
 @Entity({ name: 'email_verification' })
 export class EmailVerificationEntity
   extends VerificationEntity

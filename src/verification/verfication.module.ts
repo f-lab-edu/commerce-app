@@ -6,6 +6,7 @@ import { EmailSendStrategy } from './strategy/emailSendStrategy';
 import { SmsSendStrategy } from './strategy/smsSendStrategy';
 import { NodeMailerProvider } from './email/nodemailer/nodemailer.service';
 import { VeriStrategyFactory } from './strategy/strategy.factory';
+import { VerificationService } from './verification.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([EmailVerificationEntity])],
@@ -15,6 +16,7 @@ import { VeriStrategyFactory } from './strategy/strategy.factory';
     SmsSendStrategy,
     NodeMailerProvider,
     VeriStrategyFactory,
+    VerificationService,
   ],
   exports: [VerificationApplicationServiceProvider],
 })
