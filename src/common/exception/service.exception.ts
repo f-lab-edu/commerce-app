@@ -27,6 +27,7 @@ export class VerificationValidExists extends VerificationException {
   }
 }
 
+@HttpStatusCode(HttpStatus.INTERNAL_SERVER_ERROR)
 export class EmailSendException extends VerificationException {
   constructor(message: string) {
     super(message);
