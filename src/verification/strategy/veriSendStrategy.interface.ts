@@ -1,5 +1,5 @@
 import { VeriCodeVO } from '../vo/code.vo';
 
 export interface VeriSendStrategy {
-  send(target: string, code: VeriCodeVO): Promise<void>;
+  send(to: string, code: VeriCodeVO): Promise<void>;
 }

@@ -40,7 +40,7 @@ export class AuthController {
   @Post('verification/send')
   async sendVerification(@Body() dto: SendVerificationDto) {
     const emailVeri = await this.verificationService.sendCode(
-      new SendCodeCommand(dto.target),
+      new SendCodeCommand(dto.to),
     );
     return VerificationMapper.toResponseDto(emailVeri);
   }

@@ -14,11 +14,11 @@ import { VeriCodeVO } from '../vo/code.vo';
 export class SmsSendStrategy implements VeriSendStrategy {
   constructor() {}
 
-  async saveVerification(target: string, code: VeriCodeVO): Promise<void> {
+  async saveVerification(to: string, code: VeriCodeVO): Promise<void> {
     throw new NotImplementedException();
   }
 
-  async send(target: string, code: VeriCodeVO): Promise<void> {
+  async send(to: string, code: VeriCodeVO): Promise<void> {
     throw new NotImplementedException();
   }
 }

@@ -1,25 +1,25 @@
-export const VERIFICATION_METHODS = {
+export const VERIFICATION_CHANNELS = {
   email: 'email',
   sms: 'sms',
 } as const;
 
-type _VerificationMethods = typeof VERIFICATION_METHODS;
+type _VerificationMethods = typeof VERIFICATION_CHANNELS;
 export type TVerificationMethod =
   _VerificationMethods[keyof _VerificationMethods];
 
-export const availableMethods = Object.keys(VERIFICATION_METHODS);
+export const availableMethods = Object.keys(VERIFICATION_CHANNELS);
 
 export class SendCodeCommand {
   constructor(
-    private readonly _target: string,
-    private readonly _method: TVerificationMethod = VERIFICATION_METHODS.email,
+    private readonly _to: string,
+    private readonly _channel: TVerificationMethod = VERIFICATION_CHANNELS.email,
   ) {}
 
-  get target() {
-    return this._target;
+  get to() {
+    return this._to;
   }
 
-  get method() {
-    return this._method;
+  get channel() {
+    return this._channel;
   }
 }

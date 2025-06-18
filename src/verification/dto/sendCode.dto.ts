@@ -2,15 +2,15 @@ import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import {
   availableMethods,
   TVerificationMethod,
-  VERIFICATION_METHODS,
+  VERIFICATION_CHANNELS,
 } from '../command/sendCode.command';
 
 export class SendVerificationDto {
   @IsString()
   @IsNotEmpty()
-  target: string;
+  to: string;
 
   @IsEnum(availableMethods)
   @IsOptional()
-  method?: TVerificationMethod = VERIFICATION_METHODS.email;
+  channel?: TVerificationMethod = VERIFICATION_CHANNELS.email;
 }

@@ -13,10 +13,10 @@ export class EmailSendStrategy implements VeriSendStrategy {
     private readonly emailSender: EmailSender,
   ) {}
 
-  async send(target: string, code: VeriCodeVO): Promise<void> {
+  async send(to: string, code: VeriCodeVO): Promise<void> {
     const emailOption = EmailFactory.createVerificationEmail(
       code,
-      new UserEmailVO(target),
+      new UserEmailVO(to),
     );
     await this.emailSender.sendEmail(emailOption);
   }

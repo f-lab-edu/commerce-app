@@ -25,10 +25,10 @@ export class VeriApplicationServiceImpl
   ) {}
 
   async sendCode(sendCodeCommand: SendCodeCommand) {
-    const { method, target } = sendCodeCommand;
+    const { channel, to } = sendCodeCommand;
 
     const hasValidVeriCode = await this.verificationService.hasStillValidVeri(
-      new UserEmailVO(target),
+      new UserEmailVO(to),
     );
     if (hasValidVeriCode) {
       throw new VerificationValidExists(
@@ -36,15 +36,15 @@ export class VeriApplicationServiceImpl
       );
     }
 
-    const verificationStrategy = this.veriStrategyFactory.getStrategy(method);
+    const verificationStrategy = this.veriStrategyFactory.getStrategy(channel);
     const veriCode = new VeriCodeVO(VeriCodeVO.generate());
 
     let emailVeriEntity: PersistedEmailVerificationEntity | null = null;
     try {
       emailVeriEntity = await this.verificationService.saveVeriSendInfo(
-        new CreateVeriCommand(veriCode, new UserEmailVO(target)),
+        new CreateVeriCommand(veriCode, new UserEmailVO(to)),
       );
-      await verificationStrategy.send(target, veriCode);
+      await verificationStrategy.send(to, veriCode);
       return emailVeriEntity;
     } catch (error) {
       if (error instanceof EmailSendException && emailVeriEntity !== null) {
