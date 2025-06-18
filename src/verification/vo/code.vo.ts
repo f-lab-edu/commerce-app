@@ -2,13 +2,12 @@ import { BadRequestException } from '@nestjs/common';
 import { randomInt } from 'crypto';
 import * as dayjs from 'dayjs';
 
+// code는 6자리 정수 제약조건입니다.
+const CODE_LEN_CONSTRAINT = 6;
 export class VeriCodeVO {
   static readonly constraints = {
-    // code는 6자리 정수 제약조건입니다.
-    maxLen: 6,
-    get sixDigitPattern() {
-      return `^[0-9]{${this.maxLen}}$`;
-    },
+    maxLen: CODE_LEN_CONSTRAINT,
+    sixDigitPattern: `^[0-9]{${CODE_LEN_CONSTRAINT}}$`,
     expireInMinute: 5,
   } as const;
 
