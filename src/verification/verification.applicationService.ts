@@ -6,7 +6,7 @@ import { PersistedEmailVerificationEntity } from './entity/emailVerification.ent
 export interface VerificationApplicationService {
   sendCode: (
     sendCodeCommand: SendCodeCommand,
-  ) => Promise<PersistedEmailVerificationEntity | undefined>;
+  ) => Promise<PersistedEmailVerificationEntity>;
 }
 
 export const VerificationServiceToken = Symbol(

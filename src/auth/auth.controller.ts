@@ -42,6 +42,6 @@ export class AuthController {
     const emailVeri = await this.verificationService.sendCode(
       new SendCodeCommand(dto.target),
     );
-    return VerificationMapper.toResponseDto(emailVeri!);
+    return VerificationMapper.toResponseDto(emailVeri);
   }
 }
