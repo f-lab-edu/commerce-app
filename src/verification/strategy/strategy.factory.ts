@@ -4,6 +4,7 @@ import { SmsSendStrategy } from './smsSendStrategy';
 import {
   availableMethods,
   TVerificationMethod,
+  VERIFICATION_METHODS,
 } from '../command/sendCode.command';
 
 @Injectable()
@@ -15,9 +16,9 @@ export class VeriStrategyFactory {
 
   getStrategy(method: TVerificationMethod) {
     switch (method) {
-      case 'email':
+      case VERIFICATION_METHODS.email:
         return this.emailStrategy;
-      case 'sms':
+      case VERIFICATION_METHODS.sms:
         return this.smsStrategy;
       default:
         throw new InternalServerErrorException(
