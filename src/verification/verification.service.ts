@@ -17,6 +17,10 @@ export class VerificationService {
     private verificationRepository: Repository<PersistedEmailVerificationEntity>,
   ) {}
 
+  async findOneBy(email: UserEmailVO) {
+    return await this.verificationRepository.findOneBy({ email });
+  }
+
   async saveVeriSendInfo(createVeriCommand: CreateVeriCommand) {
     return await this.verificationRepository.save(createVeriCommand);
   }

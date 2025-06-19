@@ -2,9 +2,22 @@ import { BadRequestException } from '@nestjs/common';
 import { randomInt } from 'crypto';
 import * as dayjs from 'dayjs';
 
+export abstract class ValueObject<T> {
+  constructor(protected readonly props: T) {}
+
+  equals(vo?: ValueObject<T>): boolean {
+    if (vo === null || vo === undefined) return false;
+    if (vo.constructor !== this.constructor) return false;
+
+    return JSON.stringify(vo.props) === JSON.stringify(this.props);
+  }
+}
+
 // code는 6자리 정수 제약조건입니다.
 const CODE_LEN_CONSTRAINT = 6;
-export class VeriCodeVO {
+export class VeriCodeVO extends ValueObject<{
+  code: string;
+}> {
   static readonly constraints = {
     maxLen: CODE_LEN_CONSTRAINT,
     sixDigitPattern: `^[0-9]{${CODE_LEN_CONSTRAINT}}$`,
@@ -31,6 +44,7 @@ export class VeriCodeVO {
   private _expiredAt: Date;
 
   constructor(code: string) {
+    super({ code });
     this.validateLength(code);
     this.validatePattern(code);
     this._veriCode = code;

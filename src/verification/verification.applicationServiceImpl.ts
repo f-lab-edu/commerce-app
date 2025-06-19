@@ -10,10 +10,12 @@ import {
   EmailSendException,
   VerificationCodeSendException,
   VerificationValidExists,
+  VerificationValidNotExists,
 } from '../common/exception/service.exception';
 import { VERIFICATION_STATUS } from './entity/types';
 import { VerificationService } from './verification.service';
 import { UpdateVeriCommand } from './command/updateVeri.command';
+import { VerifyCodeCommand } from './command/verifyCode.command';
 
 @Injectable()
 export class VeriApplicationServiceImpl
@@ -64,5 +66,22 @@ export class VeriApplicationServiceImpl
         '인증코드 저장에 실패했습니다. DB상태를 확인해주세요.',
       );
     }
+  }
+
+  async verifyCode(verifyCodeCommand: VerifyCodeCommand): Promise<boolean> {
+    const { code, to } = verifyCodeCommand;
+    const codeVo = new VeriCodeVO(code);
+
+    const emailVo = new UserEmailVO(to);
+    const verificationEntity =
+      await this.verificationService.findOneBy(emailVo);
+
+    if (verificationEntity === null) {
+      throw new VerificationValidNotExists(
+        `${to}로 발송된 인증정보가 없습니다.`,
+      );
+    }
+
+    return codeVo.equals(verificationEntity.code);
   }
 }

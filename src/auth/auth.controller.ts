@@ -19,6 +19,8 @@ import { SuccessWithLocation } from '../common/decorator/successWithLocation.dec
 import { SendVerificationDto } from '../verification/dto/sendCode.dto';
 import { SendCodeCommand } from '../verification/command/sendCode.command';
 import { VerificationMapper } from '../verification/dto/veri.mapper';
+import { VerifyCodeDto } from '../verification/dto/verifyCode.dto';
+import { VerifyCodeCommand } from '../verification/command/verifyCode.command';
 
 @Controller('auth')
 export class AuthController {
@@ -43,5 +45,12 @@ export class AuthController {
       new SendCodeCommand(dto.to),
     );
     return VerificationMapper.toResponseDto(emailVeri);
+  }
+
+  @Post('verification/verify')
+  async verifyCode(@Body() dto: VerifyCodeDto) {
+    return await this.verificationService.verifyCode(
+      new VerifyCodeCommand(dto.to, dto.code),
+    );
   }
 }
