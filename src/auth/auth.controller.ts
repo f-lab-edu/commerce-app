@@ -49,8 +49,9 @@ export class AuthController {
 
   @Post('verification/verify')
   async verifyCode(@Body() dto: VerifyCodeDto) {
-    return await this.verificationService.verifyCode(
+    await this.verificationService.verifyCode(
       new VerifyCodeCommand(dto.to, dto.code),
     );
+    return { success: true };
   }
 }
