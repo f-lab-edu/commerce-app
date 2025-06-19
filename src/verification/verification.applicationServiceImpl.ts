@@ -8,7 +8,10 @@ import { CreateVeriCommand } from './vo/saveCode.command';
 import { UserEmailVO } from '../user/vo/email.vo';
 import {
   EmailSendException,
+  VerificationCodeAlreadyVerifiedException,
+  VerificationCodeMismatchException,
   VerificationCodeSendException,
+  VerificationExpiredException,
   VerificationValidExists,
   VerificationValidNotExists,
 } from '../common/exception/service.exception';
@@ -68,13 +71,13 @@ export class VeriApplicationServiceImpl
     }
   }
 
-  async verifyCode(verifyCodeCommand: VerifyCodeCommand): Promise<boolean> {
+  async verifyCode(verifyCodeCommand: VerifyCodeCommand): Promise<void> {
     const { code, to } = verifyCodeCommand;
     const codeVo = new VeriCodeVO(code);
 
     const emailVo = new UserEmailVO(to);
     const verificationEntity =
-      await this.verificationService.findOneBy(emailVo);
+      await this.verificationService.findLatestPendingVeri(emailVo);
 
     if (verificationEntity === null) {
       throw new VerificationValidNotExists(
@@ -82,6 +85,30 @@ export class VeriApplicationServiceImpl
       );
     }
 
-    return codeVo.equals(verificationEntity.code);
+    if (verificationEntity.expiredAt < new Date()) {
+      throw new VerificationExpiredException(
+        '인증코드가 만료되었습니다. 다시 요청해주세요',
+      );
+    }
+
+    if (!codeVo.equals(verificationEntity.code)) {
+      throw new VerificationCodeMismatchException(
+        `인증코드 ${codeVo.veriCode}는 일치하지 않는 인증코드입니다.. 올바른 인증코드로 다시 인증을 시도하여 주십시오.`,
+      );
+    }
+
+    if (verificationEntity.status === VERIFICATION_STATUS.VERIFIED) {
+      throw new VerificationCodeAlreadyVerifiedException(
+        `인증코드 ${codeVo.veriCode}는 이미 처리된 인증코드입니다. 다시 시도하여 주시길 바랍니다.`,
+      );
+    }
+
+    const updateCommand = new UpdateVeriCommand({
+      id: verificationEntity.id,
+      status: { status: VERIFICATION_STATUS.VERIFIED },
+      verifiedAt: new Date(),
+    });
+
+    await this.verificationService.updateVeriInfo(updateCommand);
   }
 }

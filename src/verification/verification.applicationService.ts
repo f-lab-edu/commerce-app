@@ -9,7 +9,7 @@ export interface VerificationApplicationService {
     sendCodeCommand: SendCodeCommand,
   ) => Promise<PersistedEmailVerificationEntity>;
 
-  verifyCode: (verifyCodeCommand: VerifyCodeCommand) => Promise<boolean>;
+  verifyCode: (verifyCodeCommand: VerifyCodeCommand) => Promise<void>;
 }
 
 export const VerificationServiceToken = Symbol(
