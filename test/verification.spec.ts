@@ -165,9 +165,7 @@ describe('인증번호 발송 서비스 테스트 VerificationApplicationService
     const fakeExpiredAt = new Date(2025, 6, 20, 12, 0);
     const expiredUnit = VeriCodeVO.constraints.expireInMinute;
     const oneMin = 60 * 1000;
-    const fakeCurrentDateEarlierThanExpiredAt = new Date(
-      fakeExpiredAt.getTime() - expiredUnit * oneMin,
-    );
+
     const fakeEmailEntity: Partial<EmailVerificationEntity> = {
       id: fakeId,
       expiredAt: fakeExpiredAt,
@@ -177,8 +175,14 @@ describe('인증번호 발송 서비스 테스트 VerificationApplicationService
 
     it('유효한 코드와 함께 이메일을 인증하면 이메일 인증정보가 업데이트 된다.', async () => {
       const verifyCodeCommand = new VerifyCodeCommand(fakeEmail, fakeCode);
+
       verificationServiceMock.findLatestPendingVeri.mockResolvedValue(
         fakeEmailEntity as Required<EmailVerificationEntity>,
+      );
+
+      // 현재시간을 코드가 만료되는 시간보다 이른 시간으로 설정
+      const fakeCurrentDateEarlierThanExpiredAt = new Date(
+        fakeExpiredAt.getTime() - expiredUnit * oneMin,
       );
       jest
         .spyOn(global, 'Date')
