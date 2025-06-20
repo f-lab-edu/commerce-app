@@ -10,32 +10,49 @@ import {
   VerificationCodeSendException,
   VerificationValidExists,
 } from '../src/common/exception/service.exception';
-import { PersistedEmailVerificationEntity } from '../src/verification/entity/emailVerification.entity';
+import {
+  EmailVerificationEntity,
+  PersistedEmailVerificationEntity,
+} from '../src/verification/entity/emailVerification.entity';
 import { VERIFICATION_STATUS } from '../src/verification/entity/types';
 import { UpdateVeriCommand } from '../src/verification/command/updateVeri.command';
 import { UserEmailVO } from '../src/user/vo/email.vo';
+import { VerifyCodeCommand } from '../src/verification/command/verifyCode.command';
 
 describe('인증번호 발송 서비스 테스트 VerificationApplicationService', () => {
   let sut: VeriApplicationServiceImpl;
 
-  let verificationServiceMock: Partial<VerificationService> = {
-    hasStillValidVeri: jest.fn(),
-    saveVeriSendInfo: jest.fn(),
-    updateVeriInfo: jest.fn(),
-  };
-
-  let veriSendStrategyMock: Partial<VeriSendStrategy> = {
-    send: jest.fn(),
-  };
-
-  let veriStrategyFactoryMock: Partial<VeriStrategyFactory> = {
-    getStrategy: jest.fn().mockReturnValue(veriSendStrategyMock),
-  };
-
   const fakeEmail = 'test@gmail.com';
   const sendCodeCommandMock = new SendCodeCommand(fakeEmail);
+  let verificationServiceMock: jest.Mocked<
+    Pick<
+      VerificationService,
+      | 'findLatestPendingVeri'
+      | 'hasStillValidVeri'
+      | 'saveVeriSendInfo'
+      | 'updateVeriInfo'
+    >
+  >;
+
+  let veriSendStrategyMock: Partial<VeriSendStrategy>;
+  let veriStrategyFactoryMock: Partial<VeriStrategyFactory>;
 
   beforeEach(async () => {
+    verificationServiceMock = {
+      hasStillValidVeri: jest.fn(),
+      saveVeriSendInfo: jest.fn(),
+      updateVeriInfo: jest.fn(),
+      findLatestPendingVeri: jest.fn(),
+    };
+
+    veriSendStrategyMock = {
+      send: jest.fn(),
+    };
+
+    veriStrategyFactoryMock = {
+      getStrategy: jest.fn().mockReturnValue(veriSendStrategyMock),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         VeriApplicationServiceImpl,
@@ -50,11 +67,9 @@ describe('인증번호 발송 서비스 테스트 VerificationApplicationService
       ],
     }).compile();
 
-    sut = module.get<VeriApplicationServiceImpl>(VeriApplicationServiceImpl);
-    verificationServiceMock =
-      module.get<jest.Mocked<VerificationService>>(VerificationService);
-    veriStrategyFactoryMock =
-      module.get<VeriStrategyFactory>(VeriStrategyFactory);
+    sut = module.get(VeriApplicationServiceImpl);
+    verificationServiceMock = module.get(VerificationService);
+    veriStrategyFactoryMock = module.get(VeriStrategyFactory);
   });
 
   afterEach(() => {
@@ -140,5 +155,46 @@ describe('인증번호 발송 서비스 테스트 VerificationApplicationService
 
     const result = await sut.sendCode(sendCodeCommandMock);
     expect(result).toEqual(mockEntity);
+  });
+
+  describe('verifyCode 테스트 케이스', () => {
+    const fakeEmail = 'test@gmail.com';
+    const fakeCode = '123456';
+    const fakeId = 1;
+
+    const fakeExpiredAt = new Date(2025, 6, 20, 12, 0);
+    const expiredUnit = VeriCodeVO.constraints.expireInMinute;
+    const oneMin = 60 * 1000;
+    const fakeCurrentDateEarlierThanExpiredAt = new Date(
+      fakeExpiredAt.getTime() - expiredUnit * oneMin,
+    );
+    const fakeEmailEntity: Partial<EmailVerificationEntity> = {
+      id: fakeId,
+      expiredAt: fakeExpiredAt,
+      code: new VeriCodeVO(fakeCode),
+      status: VERIFICATION_STATUS.PENDING,
+    };
+
+    it('유효한 코드와 함께 이메일을 인증하면 이메일 인증정보가 업데이트 된다.', async () => {
+      const verifyCodeCommand = new VerifyCodeCommand(fakeEmail, fakeCode);
+      verificationServiceMock.findLatestPendingVeri.mockResolvedValue(
+        fakeEmailEntity as Required<EmailVerificationEntity>,
+      );
+      jest
+        .spyOn(global, 'Date')
+        .mockImplementation(() => fakeCurrentDateEarlierThanExpiredAt);
+
+      const fakeUpdateCommand = new UpdateVeriCommand({
+        id: fakeId,
+        status: { status: VERIFICATION_STATUS.VERIFIED },
+        verifiedAt: fakeCurrentDateEarlierThanExpiredAt,
+      });
+
+      await sut.verifyCode(verifyCodeCommand);
+
+      expect(verificationServiceMock.updateVeriInfo).toHaveBeenCalledWith(
+        fakeUpdateCommand,
+      );
+    });
   });
 });
