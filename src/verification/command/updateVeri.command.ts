@@ -1,15 +1,19 @@
 import { TVerificationStatus, VERIFICATION_STATUS } from '../entity/types';
 
+type TPending = (typeof VERIFICATION_STATUS)['PENDING'];
+type TVerified = (typeof VERIFICATION_STATUS)['VERIFIED'];
+type TFailed = (typeof VERIFICATION_STATUS)['FAIL'];
+
 type TSendPending = {
-  status: Extract<TVerificationStatus, 'pending'>;
+  status: Extract<TVerificationStatus, TPending>;
 };
 
 type TSendSuccess = {
-  status: Extract<TVerificationStatus, 'success'>;
+  status: Extract<TVerificationStatus, TVerified>;
 };
 
 type TSendFail = {
-  status: Extract<TVerificationStatus, 'fail'>;
+  status: Extract<TVerificationStatus, TFailed>;
   errorMessage: string;
 };
 

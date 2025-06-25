@@ -26,6 +26,30 @@ export class VerificationValidExists extends VerificationException {
     super(message);
   }
 }
+@HttpStatusCode(HttpStatus.NOT_FOUND)
+export class VerificationValidNotExists extends VerificationException {
+  constructor(message: string) {
+    super(message);
+  }
+}
+@HttpStatusCode(HttpStatus.BAD_REQUEST)
+export class VerificationExpiredException extends VerificationException {
+  constructor(message: string) {
+    super(message);
+  }
+}
+@HttpStatusCode(HttpStatus.BAD_REQUEST)
+export class VerificationCodeMismatchException extends VerificationException {
+  constructor(message: string) {
+    super(message);
+  }
+}
+@HttpStatusCode(HttpStatus.BAD_REQUEST)
+export class VerificationCodeAlreadyVerifiedException extends VerificationException {
+  constructor(message: string) {
+    super(message);
+  }
+}
 
 @HttpStatusCode(HttpStatus.INTERNAL_SERVER_ERROR)
 export class EmailSendException extends VerificationException {

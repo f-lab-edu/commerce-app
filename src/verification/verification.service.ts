@@ -17,6 +17,18 @@ export class VerificationService {
     private verificationRepository: Repository<PersistedEmailVerificationEntity>,
   ) {}
 
+  async findLatestPendingVeri(email: UserEmailVO) {
+    return await this.verificationRepository.findOne({
+      where: {
+        email,
+        status: VERIFICATION_STATUS.PENDING,
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+  }
+
   async saveVeriSendInfo(createVeriCommand: CreateVeriCommand) {
     return await this.verificationRepository.save(createVeriCommand);
   }
