@@ -1,10 +1,12 @@
 import { BadRequestException } from '@nestjs/common';
 
+const EMAIL_MIN_LEN_CONSTRAINT = 2;
+const EMAIL_MAX_LEN_CONSTRAINT = 255;
 export class UserEmailVO {
   static readonly constraints = {
-    minLen: 2,
-    maxLen: 255,
-    emailPattern: `^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]{2,255}$`,
+    minLen: EMAIL_MIN_LEN_CONSTRAINT,
+    maxLen: EMAIL_MAX_LEN_CONSTRAINT,
+    emailPattern: `^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]{${EMAIL_MIN_LEN_CONSTRAINT},${EMAIL_MAX_LEN_CONSTRAINT}}$`,
   } as const;
   #email: string;
 

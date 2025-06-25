@@ -1,6 +1,6 @@
 import { Provider } from '@nestjs/common';
 import { PersistedUserEntity } from '../../../user/entity/user.entity';
-import { AuthApplicationServiceImpl } from './authApplication.serviceImpl';
+import { AuthApplicationServiceImpl } from './auth.applicationServiceImpl';
 import { IUserInput } from '../../../user/interface/create.interface';
 
 export interface AuthApplicationService {

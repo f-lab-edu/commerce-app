@@ -3,7 +3,7 @@ import {
   UserService,
   UserServiceToken,
 } from '../../../user/service/user.service';
-import { AuthApplicationService } from './authApplication.service';
+import { AuthApplicationService } from './auth.applicationService';
 import { IUserInput } from '../../../user/interface/create.interface';
 import {
   EncryptionService,

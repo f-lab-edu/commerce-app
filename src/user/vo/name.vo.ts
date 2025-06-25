@@ -1,12 +1,12 @@
 import { BadRequestException } from '@nestjs/common';
 
+const NAME_MIN_LEN_CONSTRAINT = 1;
+const NAME_MAX_LEN_CONSTRAINT = 20;
 export class UserNameVO {
   static readonly constraints = {
-    minLen: 1,
-    maxLen: 20,
-    get alphaNumericBetweenOneToTwentyLengthPattern(): string {
-      return `^[a-zA-Z0-9]{${this.minLen},${this.maxLen}}$`;
-    },
+    minLen: NAME_MIN_LEN_CONSTRAINT,
+    maxLen: NAME_MAX_LEN_CONSTRAINT,
+    alphaNumericBetweenOneToTwentyLengthPattern: `^[a-zA-Z0-9]{${NAME_MIN_LEN_CONSTRAINT},${NAME_MAX_LEN_CONSTRAINT}}$`,
   } as const;
 
   #name: string;
