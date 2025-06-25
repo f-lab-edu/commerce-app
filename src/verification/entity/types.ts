@@ -1,6 +1,6 @@
 export const VERIFICATION_STATUS = {
   PENDING: 'pending',
-  SUCCESS: 'success',
+  VERIFIED: 'verfied',
   FAIL: 'fail',
 } as const;
 
