@@ -18,6 +18,6 @@ import { VerificationService } from './verification.service';
     VeriStrategyFactory,
     VerificationService,
   ],
-  exports: [VerificationApplicationServiceProvider],
+  exports: [VerificationApplicationServiceProvider, VerificationService],
 })
 export class VerificationModule {}

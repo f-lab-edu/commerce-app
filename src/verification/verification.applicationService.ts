@@ -1,5 +1,5 @@
 import { Provider } from '@nestjs/common';
-import { VeriApplicationServiceImpl } from './verification.applicationServiceImpl';
+import { VerificationApplicationServiceImpl } from './verification.applicationServiceImpl';
 import { SendCodeCommand } from './command/sendCode.command';
 import { PersistedEmailVerificationEntity } from './entity/emailVerification.entity';
 import { VerifyCodeCommand } from './command/verifyCode.command';
@@ -18,5 +18,5 @@ export const VerificationServiceToken = Symbol(
 export const VerificationApplicationServiceProvider: Provider<VerificationApplicationService> =
   {
     provide: VerificationServiceToken,
-    useClass: VeriApplicationServiceImpl,
+    useClass: VerificationApplicationServiceImpl,
   };
