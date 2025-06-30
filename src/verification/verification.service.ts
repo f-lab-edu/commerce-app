@@ -152,7 +152,6 @@ export class VerificationService {
       verificationEntity = await this.saveVeriSendInfo(
         VerificationHistoryCreateCommand.from(
           verificationCodeVO,
-          verificationVO.getChannel(),
           verificationVO.getContact(),
         ),
       );
