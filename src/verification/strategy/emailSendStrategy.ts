@@ -5,6 +5,11 @@ import { EmailSender } from '../email/email.service';
 import { EmailFactory } from '../email/emailFactory';
 import { UserEmailVO } from '../../user/vo/email.vo';
 import { EmailSenderToken } from '../email/nodemailer/nodemailer.service';
+import { VerificationVO } from '../vo/verification.vo';
+import {
+  VERIFICATION_CHANNELS,
+  VerificationChannel,
+} from '../command/sendCode.command';
 
 @Injectable()
 export class EmailSendStrategy implements VeriSendStrategy {
@@ -13,11 +18,13 @@ export class EmailSendStrategy implements VeriSendStrategy {
     private readonly emailSender: EmailSender,
   ) {}
 
-  async send(to: string, code: VeriCodeVO): Promise<void> {
-    const emailOption = EmailFactory.createVerificationEmail(
-      code,
-      new UserEmailVO(to),
-    );
+  async send(verificationVo: VerificationVO, code: VeriCodeVO): Promise<void> {
+    const emailVo = verificationVo.getContact();
+    if (!(emailVo instanceof UserEmailVO)) {
+      throw new Error();
+    }
+
+    const emailOption = EmailFactory.createVerificationEmail(code, emailVo);
     await this.emailSender.sendEmail(emailOption);
   }
 }

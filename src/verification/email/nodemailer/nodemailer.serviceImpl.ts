@@ -68,7 +68,7 @@ export class NodeMailerEmailSender implements EmailSender {
     try {
       await this.transporter.sendMail({
         from: emailOption.from ?? this.smtpEmail,
-        to: emailOption.to.email,
+        to: emailOption.to.valueOf(),
         subject: emailOption.subject,
         html: emailOption.content.html,
       });

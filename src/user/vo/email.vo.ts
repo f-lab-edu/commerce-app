@@ -1,8 +1,13 @@
 import { BadRequestException } from '@nestjs/common';
+import { Verificationable } from '../../verification/strategy/veriSendStrategy.interface';
+import {
+  VERIFICATION_CHANNELS,
+  VerificationChannel,
+} from '../../verification/command/sendCode.command';
 
 const EMAIL_MIN_LEN_CONSTRAINT = 2;
 const EMAIL_MAX_LEN_CONSTRAINT = 255;
-export class UserEmailVO {
+export class UserEmailVO implements Verificationable {
   static readonly constraints = {
     minLen: EMAIL_MIN_LEN_CONSTRAINT,
     maxLen: EMAIL_MAX_LEN_CONSTRAINT,
@@ -36,7 +41,11 @@ export class UserEmailVO {
     }
   }
 
-  get email(): string {
+  valueOf() {
     return this.#email;
+  }
+
+  getContactType(): VerificationChannel {
+    return VERIFICATION_CHANNELS.email;
   }
 }

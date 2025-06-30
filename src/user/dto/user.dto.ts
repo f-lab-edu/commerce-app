@@ -16,7 +16,7 @@ export class UserResponseDto extends BaseResponseDto {
   constructor(param: PersistedUserEntity) {
     super(param);
     const { email, name, role } = param;
-    this.email = email.email;
+    this.email = email.valueOf();
     this.name = name.name;
     this.role = role;
   }

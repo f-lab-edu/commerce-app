@@ -25,7 +25,7 @@ export class VerificationResponseDto extends BaseResponseDto {
   constructor(param: PersistedEmailVerificationEntity) {
     super(param);
     const { code, email, errorMessage, expiredAt, status, verifiedAt } = param;
-    this.email = email.email;
+    this.email = email.valueOf();
     this.code = code.veriCode;
     this.expiredAt = expiredAt;
     this.status = status;

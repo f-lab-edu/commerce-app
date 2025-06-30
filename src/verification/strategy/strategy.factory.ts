@@ -3,8 +3,8 @@ import { EmailSendStrategy } from './emailSendStrategy';
 import { SmsSendStrategy } from './smsSendStrategy';
 import {
   availableMethods,
-  TVerificationMethod,
   VERIFICATION_CHANNELS,
+  VerificationChannel,
 } from '../command/sendCode.command';
 
 @Injectable()
@@ -14,7 +14,7 @@ export class VeriStrategyFactory {
     private readonly smsStrategy: SmsSendStrategy,
   ) {}
 
-  getStrategy(channel: TVerificationMethod) {
+  getStrategy(channel: VerificationChannel) {
     switch (channel) {
       case VERIFICATION_CHANNELS.email:
         return this.emailStrategy;
