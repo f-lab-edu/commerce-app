@@ -150,7 +150,7 @@ export class VerificationService {
     let verificationEntity: PersistedEmailVerificationEntity | null = null;
     try {
       verificationEntity = await this.saveVeriSendInfo(
-        VerificationHistoryCreateCommand.from(
+        new VerificationHistoryCreateCommand(
           verificationCodeVO,
           verificationVO.getContact(),
         ),

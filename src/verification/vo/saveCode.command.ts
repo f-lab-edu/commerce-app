@@ -7,7 +7,7 @@ import { VeriCodeVO } from './code.vo';
 export class VerificationHistoryCreateCommand {
   constructor(
     private readonly _code: VeriCodeVO,
-    private readonly _target: UserEmailVO | UserPhoneVO,
+    private readonly _target: Verificationable,
   ) {}
 
   get code() {
@@ -20,9 +20,5 @@ export class VerificationHistoryCreateCommand {
 
   get expiredAt() {
     return this._code.expiredAt;
-  }
-
-  static from(code: VeriCodeVO, to: Verificationable) {
-    return new VerificationHistoryCreateCommand(code, to);
   }
 }
