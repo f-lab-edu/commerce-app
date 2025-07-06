@@ -21,7 +21,7 @@ import { UpdateVeriCommand } from './command/updateVeri.command';
 import { VerifyCodeCommand } from './command/verifyCode.command';
 
 @Injectable()
-export class VeriApplicationServiceImpl
+export class VerificationApplicationServiceImpl
   implements VerificationApplicationService
 {
   constructor(

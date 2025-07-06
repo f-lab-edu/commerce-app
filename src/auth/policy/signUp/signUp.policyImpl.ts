@@ -1,14 +1,15 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { BasePolicyService } from '../../../common/policy/policy';
 import { SignUpDto } from '../../dto/signup.dto';
+import { VerificationService } from '../../../verification/verification.service';
 
 @Injectable()
 export class SignUpPolicyServiceImpl extends BasePolicyService<SignUpDto> {
   protected async executeValidationRules() {
-    this.#emailPasswordNotSame();
+    this.emailPasswordNotSame();
   }
 
-  #emailPasswordNotSame() {
+  private emailPasswordNotSame() {
     const { email, password } = this.validationTarget;
     if (email === password) {
       throw new BadRequestException(

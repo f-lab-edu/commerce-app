@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { VeriApplicationServiceImpl } from '../src/verification/verification.applicationServiceImpl';
+import { VerificationApplicationServiceImpl } from '../src/verification/verification.applicationServiceImpl';
 import { VerificationService } from '../src/verification/verification.service';
 import { VeriSendStrategy } from '../src/verification/strategy/veriSendStrategy.interface';
 import { VeriStrategyFactory } from '../src/verification/strategy/strategy.factory';
@@ -20,7 +20,7 @@ import { UserEmailVO } from '../src/user/vo/email.vo';
 import { VerifyCodeCommand } from '../src/verification/command/verifyCode.command';
 
 describe('인증번호 발송 서비스 테스트 VerificationApplicationService', () => {
-  let sut: VeriApplicationServiceImpl;
+  let sut: VerificationApplicationServiceImpl;
 
   const fakeEmail = 'test@gmail.com';
   const sendCodeCommandMock = new SendCodeCommand(fakeEmail);
@@ -55,7 +55,7 @@ describe('인증번호 발송 서비스 테스트 VerificationApplicationService
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        VeriApplicationServiceImpl,
+        VerificationApplicationServiceImpl,
         {
           provide: VerificationService,
           useValue: verificationServiceMock,
@@ -67,7 +67,7 @@ describe('인증번호 발송 서비스 테스트 VerificationApplicationService
       ],
     }).compile();
 
-    sut = module.get(VeriApplicationServiceImpl);
+    sut = module.get(VerificationApplicationServiceImpl);
     verificationServiceMock = module.get(VerificationService);
     veriStrategyFactoryMock = module.get(VeriStrategyFactory);
   });

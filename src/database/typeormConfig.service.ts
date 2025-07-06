@@ -15,6 +15,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       database: this.configService.get('DB_DATABASE'),
       synchronize: true,
       autoLoadEntities: true,
+      timezone: 'Z', // UTC로 저장
     };
   }
 }
