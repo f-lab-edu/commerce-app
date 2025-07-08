@@ -1,19 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { VerificationApplicationService } from './verification.applicationService';
 import { SendCodeCommand } from './command/sendCode.command';
-import { VeriStrategyFactory } from './strategy/strategy.factory';
 import { VeriCodeVO } from './vo/code.vo';
-import { PersistedEmailVerificationEntity } from './entity/emailVerification.entity';
-import { VerificationHistoryCreateCommand } from './vo/saveCode.command';
 import { UserEmailVO } from '../user/vo/email.vo';
 import {
-  EmailSendException,
   VerificationCodeAlreadyVerifiedException,
   VerificationCodeMismatchException,
-  VerificationCodeSendException,
   VerificationExpiredException,
-  VerificationValidExists,
-  VerificationValidNotExists,
+  VerificationCodeAlreadySentException,
+  VerificationCodeNotFoundException,
 } from '../common/exception/service.exception';
 import { VERIFICATION_STATUS } from './entity/types';
 import { VerificationService } from './verification.service';
@@ -34,7 +29,7 @@ export class VerificationApplicationServiceImpl
     const isSendBlocked =
       await this.verificationService.isSendBlocked(verificationVO);
     if (isSendBlocked) {
-      throw new VerificationValidExists(
+      throw new VerificationCodeAlreadySentException(
         `유효한 인증정보가 있습니다. 전송된 인증코드를 확인해 주세요.`,
       );
     }
@@ -56,7 +51,7 @@ export class VerificationApplicationServiceImpl
       await this.verificationService.findLatestPendingVeri(emailVo);
 
     if (verificationEntity === null) {
-      throw new VerificationValidNotExists(
+      throw new VerificationCodeNotFoundException(
         `${to}로 발송된 인증정보가 없습니다.`,
       );
     }

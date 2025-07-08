@@ -6,10 +6,7 @@ import { EmailFactory } from '../email/emailFactory';
 import { UserEmailVO } from '../../user/vo/email.vo';
 import { EmailSenderToken } from '../email/nodemailer/nodemailer.service';
 import { VerificationVO } from '../vo/verification.vo';
-import {
-  VERIFICATION_CHANNELS,
-  VerificationChannel,
-} from '../command/sendCode.command';
+import { EmailSendException } from '../../common/exception/service.exception';
 
 @Injectable()
 export class EmailSendStrategy implements VeriSendStrategy {
@@ -21,7 +18,9 @@ export class EmailSendStrategy implements VeriSendStrategy {
   async send(verificationVo: VerificationVO, code: VeriCodeVO): Promise<void> {
     const emailVo = verificationVo.getContact();
     if (!(emailVo instanceof UserEmailVO)) {
-      throw new Error();
+      throw new EmailSendException(
+        '이메일 전송 중 시스템 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+      );
     }
 
     const emailOption = EmailFactory.createVerificationEmail(code, emailVo);

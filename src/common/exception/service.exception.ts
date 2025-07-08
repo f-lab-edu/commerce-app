@@ -21,13 +21,13 @@ export class VerificationCodeSendException extends VerificationException {
 }
 
 @HttpStatusCode(HttpStatus.CONFLICT)
-export class VerificationValidExists extends VerificationException {
+export class VerificationCodeAlreadySentException extends VerificationException {
   constructor(message: string) {
     super(message);
   }
 }
 @HttpStatusCode(HttpStatus.NOT_FOUND)
-export class VerificationValidNotExists extends VerificationException {
+export class VerificationCodeNotFoundException extends VerificationException {
   constructor(message: string) {
     super(message);
   }

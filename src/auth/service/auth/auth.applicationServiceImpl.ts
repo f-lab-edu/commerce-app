@@ -16,7 +16,7 @@ import { UserEmailVO } from '../../../user/vo/email.vo';
 import { UserRawPasswordVO } from '../../../user/vo/rawPassword.vo';
 import { UserRegistrationVO } from '../../../user/vo/userRegistration.vo';
 import { VerificationService } from '../../../verification/verification.service';
-import { VerificationValidNotExists } from '../../../common/exception/service.exception';
+import { VerificationCodeNotFoundException } from '../../../common/exception/service.exception';
 
 @Injectable()
 export class AuthApplicationServiceImpl implements AuthApplicationService {
@@ -46,7 +46,7 @@ export class AuthApplicationServiceImpl implements AuthApplicationService {
     });
 
     if (!isVerified) {
-      throw new VerificationValidNotExists(
+      throw new VerificationCodeNotFoundException(
         `인증되지 않았습니다. 인증을 완료하여 주시길 바랍니다. `,
       );
     }
