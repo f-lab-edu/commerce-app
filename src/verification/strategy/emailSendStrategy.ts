@@ -20,6 +20,7 @@ export class EmailSendStrategy implements VeriSendStrategy {
     if (!(emailVo instanceof UserEmailVO)) {
       throw new EmailSendException(
         '이메일 전송 중 시스템 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+        `유효하지 않은 ${UserEmailVO.name} 인스턴스입니다. Argument ${VerificationVO.name}를 확인하세요`,
       );
     }
 
