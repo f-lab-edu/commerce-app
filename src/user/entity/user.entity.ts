@@ -1,4 +1,4 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { TRole, USER_ROLE } from '../types';
 import { IBaseEntity, MyBaseEntity } from '../../common/entity/base';
 import { UserEmailVO } from '../vo/email.vo';
@@ -8,12 +8,14 @@ import { NameVOTransformer } from './nameVO.transformer';
 import { UserHashedPasswordVO } from '../vo/hashedPassword.vo';
 import { HashedPasswordVOTransformer } from './hashedPasswordVO.transformer';
 import { CommonConstraints } from '../../common/entity/base.constraints';
+import { OrderEntity } from '../../order/entity/order.entity';
 
 export interface IUserEntity extends IBaseEntity {
   email: UserEmailVO;
   name: UserNameVO;
   password: UserHashedPasswordVO;
   role?: TRole;
+  orders?: OrderEntity[];
 }
 
 export type PersistedUserEntity = Required<IUserEntity>;
@@ -48,14 +50,18 @@ export class UserEntity extends MyBaseEntity implements IUserEntity {
   })
   role: TRole;
 
+  @OneToMany(() => OrderEntity, (order) => order.user)
+  orders?: OrderEntity[];
+
   constructor(param?: IUserEntity) {
     super(param);
     if (param) {
-      const { email, name, password, role } = param;
+      const { email, name, password, role, orders } = param;
       this.email = email;
       this.name = name;
       this.password = password;
       this.role = role ?? USER_ROLE.buyer;
+      this.orders = orders;
     }
   }
 

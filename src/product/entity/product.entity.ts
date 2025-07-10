@@ -1,6 +1,7 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { IBaseEntity, MyBaseEntity } from '../../common/entity/base';
 import { CommonConstraints } from '../../common/entity/base.constraints';
+import { OrderDetailEntity } from '../../orderDetail/entity/orderDetail.entity';
 
 export interface IProductEntity extends IBaseEntity {
   name: string;
@@ -28,16 +29,19 @@ export class ProductEntity extends MyBaseEntity implements IProductEntity {
   description?: string;
 
   @Column({
-    type: CommonConstraints.DB_CONSTRAINTS.BASIC_UNSIGNED_NUMBER,
+    type: CommonConstraints.DB_CONSTRAINTS.BASIC_NUMBER,
     unsigned: true,
   })
   price: number;
 
   @Column({
-    type: CommonConstraints.DB_CONSTRAINTS.BASIC_UNSIGNED_NUMBER,
+    type: CommonConstraints.DB_CONSTRAINTS.BASIC_NUMBER,
     unsigned: true,
   })
   stocks: number;
+
+  @OneToMany(() => OrderDetailEntity, (orderDetail) => orderDetail.order)
+  orderDetails: OrderDetailEntity[];
 
   constructor(param?: IProductEntity) {
     super(param);
