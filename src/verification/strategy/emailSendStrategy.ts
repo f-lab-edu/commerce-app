@@ -20,6 +20,7 @@ export class EmailSendStrategy implements VeriSendStrategy {
     if (!(emailVo instanceof UserEmailVO)) {
       throw new EmailSendException(
         '이메일 전송 중 시스템 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+        `Argument ${JSON.stringify(emailVo, null, 2)}가 ${UserEmailVO.name} 타입이 아닙니다.`,
       );
     }
 
