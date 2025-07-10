@@ -1,6 +1,8 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { VeriSendStrategy } from './veriSendStrategy.interface';
 import { VeriCodeVO } from '../vo/code.vo';
+import { UserPhoneVO } from '../../user/vo/phone.vo';
+import { VerificationVO } from '../vo/verification.vo';
 
 /**
  * 회원가입시 인증번호 발송 로직 구현할때
@@ -18,7 +20,7 @@ export class SmsSendStrategy implements VeriSendStrategy {
     throw new NotImplementedException();
   }
 
-  async send(to: string, code: VeriCodeVO): Promise<void> {
+  async send(to: VerificationVO, code: VeriCodeVO): Promise<void> {
     throw new NotImplementedException();
   }
 }

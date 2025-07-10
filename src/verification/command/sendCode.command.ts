@@ -3,16 +3,16 @@ export const VERIFICATION_CHANNELS = {
   sms: 'sms',
 } as const;
 
-type _VerificationMethods = typeof VERIFICATION_CHANNELS;
-export type TVerificationMethod =
-  _VerificationMethods[keyof _VerificationMethods];
+type _VerificationChannel = typeof VERIFICATION_CHANNELS;
+export type VerificationChannel =
+  _VerificationChannel[keyof _VerificationChannel];
 
 export const availableMethods = Object.keys(VERIFICATION_CHANNELS);
 
 export class SendCodeCommand {
   constructor(
     private readonly _to: string,
-    private readonly _channel: TVerificationMethod = VERIFICATION_CHANNELS.email,
+    private readonly _channel: VerificationChannel = VERIFICATION_CHANNELS.email,
   ) {}
 
   get to() {

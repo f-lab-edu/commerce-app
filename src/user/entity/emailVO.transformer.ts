@@ -20,6 +20,6 @@ export class EmailVOTransformer implements ValueTransformer {
       return null;
     }
 
-    return value.email;
+    return value.valueOf();
   }
 }
