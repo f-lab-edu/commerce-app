@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, Relation } from 'typeorm';
 import { IBaseEntity, MyBaseEntity } from '../../common/entity/base';
 import { CommonConstraints } from '../../common/entity/base.constraints';
 import { OrderEntity } from '../../order/entity/order.entity';
@@ -20,8 +20,11 @@ export class OrderDetailEntity extends MyBaseEntity implements IOrderDetail {
   orderId: number;
 
   @ManyToOne(() => OrderEntity, (order) => order.orderDetails)
-  @JoinColumn({ name: 'orderId', referencedColumnName: 'id' })
-  order: OrderEntity;
+  @JoinColumn({
+    name: 'orderId',
+    referencedColumnName: CommonConstraints.DB_CONSTRAINTS.ID,
+  })
+  order: Relation<OrderEntity>;
 
   @Column({
     type: CommonConstraints.DB_CONSTRAINTS.BASIC_NUMBER,
@@ -29,8 +32,11 @@ export class OrderDetailEntity extends MyBaseEntity implements IOrderDetail {
   productId: number;
 
   @ManyToOne(() => ProductEntity, (product) => product.orderDetails)
-  @JoinColumn({ name: 'productId', referencedColumnName: 'id' })
-  product: ProductEntity;
+  @JoinColumn({
+    name: 'productId',
+    referencedColumnName: CommonConstraints.DB_CONSTRAINTS.ID,
+  })
+  product: Relation<ProductEntity>;
 
   @Column({
     type: CommonConstraints.DB_CONSTRAINTS.BASIC_NUMBER,
