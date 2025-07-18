@@ -39,7 +39,10 @@ export class OrderEntity extends MyBaseEntity implements IOrderEntity {
   userId: number;
 
   @ManyToOne(() => UserEntity, (user) => user.orders)
-  @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
+  @JoinColumn({
+    name: 'userId',
+    referencedColumnName: CommonConstraints.DB_CONSTRAINTS.ID,
+  })
   user: UserEntity;
 
   @Column({

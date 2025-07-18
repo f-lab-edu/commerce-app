@@ -40,7 +40,7 @@ export class ProductEntity extends MyBaseEntity implements IProductEntity {
   })
   stocks: number;
 
-  @OneToMany(() => OrderDetailEntity, (orderDetail) => orderDetail.order)
+  @OneToMany(() => OrderDetailEntity, (orderDetail) => orderDetail.product)
   orderDetails: OrderDetailEntity[];
 
   constructor(param?: IProductEntity) {
