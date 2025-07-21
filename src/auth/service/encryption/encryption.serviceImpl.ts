@@ -34,4 +34,14 @@ export class EncryptionServiceImpl {
     const hashed = await bcrypt.hash(password.rawPassword, parsed);
     return new UserHashedPasswordVO(hashed);
   }
+
+  async compare(
+    passwordInput: UserRawPasswordVO,
+    userHashedPassword: UserHashedPasswordVO,
+  ): Promise<boolean> {
+    return await bcrypt.compare(
+      passwordInput.rawPassword,
+      userHashedPassword.hashedPassword,
+    );
+  }
 }

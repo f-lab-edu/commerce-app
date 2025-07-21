@@ -6,17 +6,17 @@ import {
   Injectable,
   Logger,
 } from '@nestjs/common';
-import { ServiceException } from '../exception/service.exception';
 import { Response } from 'express';
 import { Reflector } from '@nestjs/core';
 import { HttpStatusCode } from '../decorator/httpCode.decorator';
+import { CustomException } from '../exception/service.exception';
 
 @Injectable()
-@Catch(ServiceException)
+@Catch(CustomException)
 export class ServiceExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(ServiceExceptionFilter.name);
   constructor(private reflector: Reflector) {}
-  catch(exception: ServiceException, host: ArgumentsHost) {
+  catch(exception: CustomException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 

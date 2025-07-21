@@ -1,7 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
 import { HttpStatusCode } from '../decorator/httpCode.decorator';
 
-export abstract class ServiceException extends Error {
+export abstract class CustomException extends Error {
   protected debuggingMessage: string | undefined;
   constructor(
     message: string, // 클라이언트로 보낼 메세지입니다.
@@ -17,7 +17,7 @@ export abstract class ServiceException extends Error {
   }
 }
 
-export class VerificationException extends ServiceException {}
+export class VerificationException extends CustomException {}
 
 @HttpStatusCode(HttpStatus.INTERNAL_SERVER_ERROR)
 export class VerificationCodeSendException extends VerificationException {
