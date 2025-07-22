@@ -8,10 +8,13 @@ import { SignUpPolicyToken } from '../../src/auth/policy/signUp/signUp.policy';
 import { VerificationService } from '../../src/verification/verification.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { PersistedUserEntity } from '../../src/user/entity/user.entity';
 import { LoginCommand } from '../../src/auth/command/login.command';
 import { UserEmailVO } from '../../src/user/vo/email.vo';
 import { UserRawPasswordVO } from '../../src/user/vo/rawPassword.vo';
+import {
+  NotFoundException,
+  WrongPassword,
+} from '../../src/common/exception/domain.exception';
 
 describe('Auth.ApplicationServiceImpl Service Test Suites', () => {
   let sut: AuthApplicationServiceImpl;
@@ -119,6 +122,40 @@ describe('Auth.ApplicationServiceImpl Service Test Suites', () => {
       expect(user).toEqual(fakeUser);
       expect(accessToken).toBe(accessTokenData);
       expect(refreshToken).toBe(refreshTokenData);
+    });
+
+    it('없는 사용자 이메일로 로그인을 시도하면 에러를 던집니다.', async () => {
+      const fakeUser = {
+        id: 1,
+        password: 'test@1234',
+      };
+      const loginCommand = new LoginCommand(
+        new UserEmailVO('test@example.com'),
+        new UserRawPasswordVO(fakeUser.password),
+      );
+      userServiceMock.find.mockResolvedValue(null);
+
+      await expect(() => sut.login(loginCommand)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('비밀번호가 일치하지 않으면, 에러를 던집니다.', async () => {
+      const fakeUser = {
+        id: 1,
+        password: 'test@1234',
+      };
+      const wrongPassword = '1234@test';
+      const loginCommand = new LoginCommand(
+        new UserEmailVO('test@example.com'),
+        new UserRawPasswordVO(wrongPassword),
+      );
+      userServiceMock.find.mockResolvedValue(fakeUser as any);
+      encryptionServiceMock.compare.mockResolvedValue(false);
+
+      await expect(() => sut.login(loginCommand)).rejects.toThrow(
+        WrongPassword,
+      );
     });
   });
 });
