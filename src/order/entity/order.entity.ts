@@ -4,17 +4,41 @@ import { CommonConstraints } from '../../common/entity/base.constraints';
 import { UserEntity } from '../../user/entity/user.entity';
 import { OrderDetailEntity } from '../../orderDetail/entity/orderDetail.entity';
 
+/**
+ * 주문 상태 흐름 다이어그램
+ * - pending: 주문 접수 (결제 대기)
+ * - paid: 결제 완료
+ * - processing: 상품 준비 중
+ * - shipped: 배송 중
+ * - delivered: 배송완료
+ * - canceled: 주문 취소
+ * - refunded: 환불 완료
+ *
+ *  흐름도
+ *
+ *   시작
+ *    │
+ *  pending
+ *    │
+ *   paid ──────+
+ *    │         |
+ *  shipped ────+ canceled -> refuended
+ *    │         |
+ * delivered ───+
+ *    |
+ *   종료
+ */
+
 export const ORDER_STATUS = {
   PENDING: 'pending',
   PAID: 'paid',
   PROCESSING: 'processing',
-  SHAPPED: 'shipped',
+  SHIPPED: 'shipped',
   DELIVERED: 'delivered',
   CANCELED: 'canceled',
   REFUNDED: 'refunded',
 };
-const extractOrderStatusEnum = () => Object.values(ORDER_STATUS);
-const OrderStatusEnum = extractOrderStatusEnum();
+const OrderStatusEnum = Object.values(ORDER_STATUS);
 type OrderStatus = typeof ORDER_STATUS;
 type TOrderStatus = OrderStatus[keyof OrderStatus];
 
@@ -99,29 +123,7 @@ export class OrderEntity extends MyBaseEntity implements IOrderEntity {
   constructor(param?: IOrderEntity) {
     super(param);
     if (param) {
-      const {
-        orderStatus,
-        postalCode,
-        recipientName,
-        recipientPhone,
-        shippingAddress,
-        shippingFee,
-        subtotal,
-        totalAmount,
-        userId,
-        shippingDetailAddress,
-      } = param;
-
-      this.orderStatus = orderStatus;
-      this.postalCode = postalCode;
-      this.recipientName = recipientName;
-      this.recipientPhone = recipientPhone;
-      this.shippingAddress = shippingAddress;
-      this.shippingFee = shippingFee;
-      this.subtotal = subtotal;
-      this.totalAmount = totalAmount;
-      this.userId = userId;
-      this.shippingDetailAddress = shippingDetailAddress;
+      Object.assign(this, param);
     }
   }
 
