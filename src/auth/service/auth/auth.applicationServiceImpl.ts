@@ -82,7 +82,7 @@ export class AuthApplicationServiceImpl implements AuthApplicationService {
   }
 
   async login({ email, password }: LoginCommand): Promise<LoginResData> {
-    const user = await this.userService.find({ email });
+    const user = await this.userService.find({ email, type: 'email' });
     if (!user) {
       throw new NotFoundException(
         `이메일 ${email}에 일치하는 사용자가 없어요.다시 시도해주세요`,
@@ -112,6 +112,7 @@ export class AuthApplicationServiceImpl implements AuthApplicationService {
     const secret = this.configService.get<string>('JWT_SECRET');
     if (!secret) {
       throw new ConfigException(
+        '서버 설정에 문제가 있습니다. 잠시 후 다시 시도해주세요.', // 클라이언트 메세지
         '토큰 시크릿이 없어요. 설정파일을 확인해주세요',
       );
     }
@@ -130,13 +131,14 @@ export class AuthApplicationServiceImpl implements AuthApplicationService {
     }
 
     if (!refreshExpiresIn) {
-      message += ', 리프레시 토큰의';
+      message = message === '' ? '리프레시 토큰' : ', 리프레시 토큰의';
     }
 
     const hasConfigError = !accessExpiresIn || !refreshExpiresIn;
     if (hasConfigError) {
       throw new ConfigException(
-        message + '만료시간이 설정되지 않았어요. 설정 파일을 확인해주세요',
+        '서버 설정에 문제가 있습니다. 잠시 후 다시 시도해주세요.', // 클라이언트 메세지
+        message + '만료시간이 설정되지 않았어요. 설정 파일을 확인해주세요', // 디버깅용 메세지
       );
     }
 

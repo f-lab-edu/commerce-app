@@ -5,8 +5,23 @@ import { Repository } from 'typeorm';
 import { UserEmailVO } from '../vo/email.vo';
 import { UserService } from './user.service';
 import { UserRegistrationVO } from '../vo/userRegistration.vo';
+import { TypeError } from '../../common/exception/internal.exception';
 
-export type FindFilter = { id: number } | { email: UserEmailVO };
+type IdFilter = {
+  type: 'id';
+  id: number;
+};
+type EmailFilter = {
+  type: 'email';
+  email: UserEmailVO;
+};
+
+export type FindFilter = IdFilter | EmailFilter;
+type FilterHandlerMap = {
+  id: (f: IdFilter) => { where: string; params: { id: number } };
+  email: (f: EmailFilter) => { where: string; params: { email: UserEmailVO } };
+};
+
 @Injectable()
 export class UserServiceImpl implements UserService {
   constructor(
@@ -29,22 +44,28 @@ export class UserServiceImpl implements UserService {
   async find(filter: FindFilter): Promise<PersistedUserEntity | null> {
     const queryBuiider = this.userRepository.createQueryBuilder().select('*');
 
-    const whereFilter = {
-      id: {
-        key: 'id = :id',
-        param: { id: 'id' in filter && filter.id },
-      },
-      email: {
-        key: 'email = :email',
-        param: {
-          email: 'email' in filter && filter.email.valueOf().toLowerCase(),
-        },
-      },
+    const filterHandlers = (filter: FindFilter) => {
+      switch (filter.type) {
+        case 'id':
+          return {
+            where: 'user.id = :id',
+            params: { id: filter.id },
+          };
+        case 'email':
+          return {
+            where: 'user.email = :email',
+            params: { email: filter.email },
+          };
+        default:
+          throw new TypeError(
+            '지원하지 않는 필터링 방식이에요.',
+            `${JSON.stringify(filter)}은 지원하지 않는 타입이에요.`,
+          );
+      }
     };
 
-    const key = Object.keys(filter)[0] as 'id' | 'email';
-    const { key: where, param } = whereFilter[key];
-    queryBuiider.where(where, param);
+    const { params, where } = filterHandlers(filter);
+    queryBuiider.where(where, params);
 
     return await queryBuiider.getOne();
   }
