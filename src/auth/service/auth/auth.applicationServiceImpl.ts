@@ -85,7 +85,7 @@ export class AuthApplicationServiceImpl implements AuthApplicationService {
     const user = await this.userService.find({ email, type: 'email' });
     if (!user) {
       throw new NotFoundException(
-        `이메일 ${email}에 일치하는 사용자가 없어요.다시 시도해주세요`,
+        `이메일 ${email.valueOf()}에 일치하는 사용자가 없어요.다시 시도해주세요`,
       );
     }
 

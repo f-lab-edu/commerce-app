@@ -32,6 +32,7 @@ export class ServiceExceptionFilter implements ExceptionFilter {
   }
 
   setHeader(res: Response, statusCode: HttpStatus) {
+    console.log(statusCode);
     switch (statusCode) {
       case HttpStatus.UNAUTHORIZED:
         const unauthorizedHeader = new Headers({
@@ -39,11 +40,7 @@ export class ServiceExceptionFilter implements ExceptionFilter {
           ['WWW-Authenticate']: 'Bearer',
         });
         res.setHeaders(unauthorizedHeader);
-
-      default:
-        throw new Error(
-          '응답헤더 설정이 잘못되었습니다. 응답코드와 응답헤더를 다시 확인해주세요',
-        );
+        return;
     }
   }
 }

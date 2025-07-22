@@ -17,10 +17,6 @@ type EmailFilter = {
 };
 
 export type FindFilter = IdFilter | EmailFilter;
-type FilterHandlerMap = {
-  id: (f: IdFilter) => { where: string; params: { id: number } };
-  email: (f: EmailFilter) => { where: string; params: { email: UserEmailVO } };
-};
 
 @Injectable()
 export class UserServiceImpl implements UserService {
@@ -42,19 +38,19 @@ export class UserServiceImpl implements UserService {
   }
 
   async find(filter: FindFilter): Promise<PersistedUserEntity | null> {
-    const queryBuiider = this.userRepository.createQueryBuilder().select('*');
+    const queryBuiider = this.userRepository.createQueryBuilder().select();
 
     const filterHandlers = (filter: FindFilter) => {
       switch (filter.type) {
         case 'id':
           return {
-            where: 'user.id = :id',
+            where: 'id = :id',
             params: { id: filter.id },
           };
         case 'email':
           return {
-            where: 'user.email = :email',
-            params: { email: filter.email },
+            where: 'email = :email',
+            params: { email: filter.email.valueOf() },
           };
         default:
           throw new TypeError(
@@ -65,6 +61,7 @@ export class UserServiceImpl implements UserService {
     };
 
     const { params, where } = filterHandlers(filter);
+
     queryBuiider.where(where, params);
 
     return await queryBuiider.getOne();
