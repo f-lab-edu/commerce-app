@@ -22,7 +22,7 @@ import { OrderDetailEntity } from '../../orderDetail/entity/orderDetail.entity';
  *    │
  *   paid ──────+
  *    │         |
- *  shipped ────+ canceled -> refuended
+ *  shipped ────+ canceled -> refunded
  *    │         |
  * delivered ───+
  *    |
