@@ -1,20 +1,20 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, ParseIntPipe, Query } from '@nestjs/common';
 import { ProductService } from './product.service';
 
 @Controller('products')
 export class ProductsController {
   constructor(private productService: ProductService) {}
 
-  @Get('/popular')
+  @Get('popular')
   async getPopular(
-    @Query('limit') limit: string,
-    @Query('month') month: string,
-    @Query('priceFrom') priceFrom: string,
-    @Query('priceTo') priceTo: string,
+    @Query('limit', ParseIntPipe) limit: number,
+    @Query('month', ParseIntPipe) month: number,
+    @Query('minPrice', ParseIntPipe) minPrice: number,
+    @Query('maxPrice', ParseIntPipe) maxPrice: number,
   ) {
     return await this.productService.getPopularTopK(limit, month, {
-      from: priceFrom,
-      to: priceTo,
+      min: minPrice,
+      max: maxPrice,
     });
   }
 }

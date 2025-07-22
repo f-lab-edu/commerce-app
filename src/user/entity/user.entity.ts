@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, OneToMany, Relation } from 'typeorm';
 import { TRole, USER_ROLE } from '../types';
 import { IBaseEntity, MyBaseEntity } from '../../common/entity/base';
 import { UserEmailVO } from '../vo/email.vo';
@@ -51,7 +51,7 @@ export class UserEntity extends MyBaseEntity implements IUserEntity {
   role: TRole;
 
   @OneToMany(() => OrderEntity, (order) => order.user)
-  orders?: OrderEntity[];
+  orders?: Relation<OrderEntity>[];
 
   constructor(param?: IUserEntity) {
     super(param);
