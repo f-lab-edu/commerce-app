@@ -1,6 +1,7 @@
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus, SetMetadata } from '@nestjs/common';
 import { HttpStatusCode } from '../decorator/httpCode.decorator';
 import { CustomException } from './service.exception';
+import { ResponseHeader } from '../decorator/header.decorator';
 
 export class DomainException extends CustomException {}
 
@@ -8,4 +9,8 @@ export class DomainException extends CustomException {}
 export class NotFoundException extends DomainException {}
 
 @HttpStatusCode(HttpStatus.UNAUTHORIZED)
+@ResponseHeader({
+  Date: () => new Date().toUTCString(),
+  ['WWW-Authenticate']: 'Bearer',
+})
 export class WrongPassword extends DomainException {}
