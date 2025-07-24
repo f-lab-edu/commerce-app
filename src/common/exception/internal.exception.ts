@@ -9,3 +9,6 @@ export class ConfigException extends InternalException {}
 
 @HttpStatusCode(HttpStatus.INTERNAL_SERVER_ERROR)
 export class TypeError extends InternalException {}
+
+@HttpStatusCode(HttpStatus.INTERNAL_SERVER_ERROR)
+export class InitializationException extends InternalException {}
