@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfigService } from './database/typeormConfig.service';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
-import { APP_FILTER } from '@nestjs/core';
-import { ServiceExceptionFilter } from './common/filter/service.filter';
+import { ProductModule } from './product/product.module';
+import { OrderModule } from './order/order.module';
+import { OrderDetailModule } from './orderDetail/orderDetail.module';
 
 @Module({
   imports: [
@@ -15,6 +16,9 @@ import { ServiceExceptionFilter } from './common/filter/service.filter';
     }),
     UserModule,
     AuthModule,
+    ProductModule,
+    OrderModule,
+    OrderDetailModule,
   ],
 })
 export class AppModule {}
