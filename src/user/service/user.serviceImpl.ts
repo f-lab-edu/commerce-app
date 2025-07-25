@@ -53,10 +53,10 @@ export class UserServiceImpl implements UserService {
             params: { email: filter.email.valueOf() },
           };
         default:
-          throw new TypeError(
-            '지원하지 않는 필터링 방식이에요.',
-            `${JSON.stringify(filter)}은 지원하지 않는 타입이에요.`,
-          );
+          throw new TypeError({
+            clientMsg: '지원하지 않는 필터링 방식이에요.',
+            devMsg: `${JSON.stringify(filter)}은 지원하지 않는 타입이에요.`,
+          });
       }
     };
 

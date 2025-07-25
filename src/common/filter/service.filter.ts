@@ -32,7 +32,6 @@ export class ServiceExceptionFilter implements ExceptionFilter {
   }
 
   setHeader(res: Response, statusCode: HttpStatus) {
-    console.log(statusCode);
     switch (statusCode) {
       case HttpStatus.UNAUTHORIZED:
         const unauthorizedHeader = new Headers({
