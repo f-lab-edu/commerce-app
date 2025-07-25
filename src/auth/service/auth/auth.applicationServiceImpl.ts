@@ -24,7 +24,6 @@ import {
 import { LoginCommand } from '../../command/login.command';
 import { PersistedUserEntity } from '../../../user/entity/user.entity';
 import { JwtService } from '@nestjs/jwt';
-import { randomUUID } from 'crypto';
 import { ConfigService } from '@nestjs/config';
 import { ConfigException } from '../../../common/exception/internal.exception';
 import { JwtConfigData, LoginResData } from '../../types/auth.type';
@@ -85,7 +84,8 @@ export class AuthApplicationServiceImpl implements AuthApplicationService {
     const user = await this.userService.find({ email, type: 'email' });
     if (!user) {
       throw new NotFoundException({
-        clientMsg: `이메일 ${email.valueOf()}에 일치하는 사용자가 없어요.다시 시도해주세요`,
+        clientMsg: `로그인에 실패했습니다. 다시 시도해주세요`,
+        devMsg: `시도한 이메일: ${email.valueOf()}`,
       });
     }
 
@@ -95,7 +95,7 @@ export class AuthApplicationServiceImpl implements AuthApplicationService {
     );
     if (!isPasswordSame) {
       throw new WrongPassword({
-        clientMsg: `${email.valueOf()} 로그인 시도가 실패했어요. 잘못된 비밀번호입니다. `,
+        clientMsg: `로그인에 실패했습니다. 다시 시도해주세요`,
       });
     }
 
