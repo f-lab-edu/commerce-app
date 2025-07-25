@@ -24,7 +24,6 @@ import {
 import { LoginCommand } from '../../command/login.command';
 import { PersistedUserEntity } from '../../../user/entity/user.entity';
 import { JwtService } from '@nestjs/jwt';
-import { randomUUID } from 'crypto';
 import { ConfigService } from '@nestjs/config';
 import { ConfigException } from '../../../common/exception/internal.exception';
 import { JwtConfigData, LoginResData } from '../../types/auth.type';
@@ -63,9 +62,9 @@ export class AuthApplicationServiceImpl implements AuthApplicationService {
     });
 
     if (!isVerified) {
-      throw new VerificationCodeNotFoundException(
-        `인증되지 않았습니다. 인증을 완료하여 주시길 바랍니다. `,
-      );
+      throw new VerificationCodeNotFoundException({
+        clientMsg: `인증되지 않았습니다. 인증을 완료하여 주시길 바랍니다. `,
+      });
     }
 
     const { hashedPassword } = await this.encryptionService.hash(
@@ -84,9 +83,10 @@ export class AuthApplicationServiceImpl implements AuthApplicationService {
   async login({ email, password }: LoginCommand): Promise<LoginResData> {
     const user = await this.userService.find({ email, type: 'email' });
     if (!user) {
-      throw new NotFoundException(
-        `이메일 ${email.valueOf()}에 일치하는 사용자가 없어요.다시 시도해주세요`,
-      );
+      throw new NotFoundException({
+        clientMsg: `로그인에 실패했습니다. 다시 시도해주세요`,
+        devMsg: `시도한 이메일: ${email.valueOf()}`,
+      });
     }
 
     const isPasswordSame = await this.encryptionService.compare(
@@ -94,9 +94,9 @@ export class AuthApplicationServiceImpl implements AuthApplicationService {
       user.password,
     );
     if (!isPasswordSame) {
-      throw new WrongPassword(
-        `${email.valueOf()} 로그인 시도가 실패했어요. 잘못된 비밀번호입니다. `,
-      );
+      throw new WrongPassword({
+        clientMsg: `로그인에 실패했습니다. 다시 시도해주세요`,
+      });
     }
 
     const { accessToken, refreshToken } = await this.generateJwtTokens(user);
@@ -111,10 +111,10 @@ export class AuthApplicationServiceImpl implements AuthApplicationService {
   private getJwtConfigs(): JwtConfigData {
     const secret = this.configService.get<string>('JWT_SECRET');
     if (!secret) {
-      throw new ConfigException(
-        '서버 설정에 문제가 있습니다. 잠시 후 다시 시도해주세요.', // 클라이언트 메세지
-        '토큰 시크릿이 없어요. 설정파일을 확인해주세요',
-      );
+      throw new ConfigException({
+        clientMsg: '서버 설정에 문제가 있습니다. 잠시 후 다시 시도해주세요.',
+        devMsg: '토큰 시크릿이 없어요. 설정파일을 확인해주세요',
+      });
     }
 
     const accessExpiresIn = this.configService.get<string>(
@@ -136,10 +136,11 @@ export class AuthApplicationServiceImpl implements AuthApplicationService {
 
     const hasConfigError = !accessExpiresIn || !refreshExpiresIn;
     if (hasConfigError) {
-      throw new ConfigException(
-        '서버 설정에 문제가 있습니다. 잠시 후 다시 시도해주세요.', // 클라이언트 메세지
-        message + '만료시간이 설정되지 않았어요. 설정 파일을 확인해주세요', // 디버깅용 메세지
-      );
+      throw new ConfigException({
+        clientMsg: '서버 설정에 문제가 있습니다. 잠시 후 다시 시도해주세요.',
+        devMsg:
+          message + '만료시간이 설정되지 않았어요. 설정 파일을 확인해주세요',
+      });
     }
 
     return {
