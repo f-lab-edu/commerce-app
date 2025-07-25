@@ -20,9 +20,9 @@ export class AddressVO {
       address.length < this.constraints.minLen ||
       address.length > this.constraints.maxLen
     ) {
-      throw new InitializationException(
-        `${AddressVO.name} 초기화 중 문제가 발생했어요. 주소의 길이는 ${this.constraints.minLen} ~ ${this.constraints.maxLen} 사이여야 합니다.`,
-      );
+      throw new InitializationException({
+        clientMsg: `${AddressVO.name} 초기화 중 문제가 발생했어요. 주소의 길이는 ${this.constraints.minLen} ~ ${this.constraints.maxLen} 사이여야 합니다.`,
+      });
     }
 
     return new AddressVO(address);

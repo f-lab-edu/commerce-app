@@ -23,9 +23,9 @@ export class PostalCodeVO {
       postalCode.length < this.constraints.maxLen ||
       postalCode.length > this.constraints.maxLen
     ) {
-      throw new InitializationException(
-        `${PostalCodeVO.name} 초기화 중 문제가 발생했어요. 우편번호의 길이는 ${this.constraints.minLen} ~ ${this.constraints.maxLen} 사이여야 합니다.`,
-      );
+      throw new InitializationException({
+        clientMsg: `${PostalCodeVO.name} 초기화 중 문제가 발생했어요. 우편번호의 길이는 ${this.constraints.minLen} ~ ${this.constraints.maxLen} 사이여야 합니다.`,
+      });
     }
 
     return new PostalCodeVO(postalCode);

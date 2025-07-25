@@ -12,7 +12,9 @@ export type TIdempotencyStatus = IdempotencyStatus[keyof IdempotencyStatus];
 
 @Entity('idempotency_keys')
 export class IdempotencyKeyEntity {
-  @PrimaryColumn()
+  @PrimaryColumn({
+    type: CommonConstraints.DB_CONSTRAINTS.BASIC_STRING,
+  })
   idempotencyKey: string;
 
   @Column({ type: CommonConstraints.DB_CONSTRAINTS.BASIC_NUMBER })
@@ -24,6 +26,11 @@ export class IdempotencyKeyEntity {
     enum: IDEMPOTENCY_STATUS,
   })
   status: TIdempotencyStatus;
+
+  @Column({
+    type: CommonConstraints.DB_CONSTRAINTS.BASIC_STRING,
+  })
+  hashedPayload: string;
 
   @Column({ type: 'json' })
   responseBody: Record<string, string>;
