@@ -4,6 +4,7 @@ import {
   Inject,
   InternalServerErrorException,
   Post,
+  Res,
 } from '@nestjs/common';
 import { SignUpDto } from './dto/signup.dto';
 import {
@@ -21,6 +22,11 @@ import { SendCodeCommand } from '../verification/command/sendCode.command';
 import { VerificationMapper } from '../verification/dto/veri.mapper';
 import { VerifyCodeDto } from '../verification/dto/verifyCode.dto';
 import { VerifyCodeCommand } from '../verification/command/verifyCode.command';
+import { LoginDto } from './dto/login.dto';
+import { LoginCommand } from './command/login.command';
+import { UserEmailVO } from '../user/vo/email.vo';
+import { UserRawPasswordVO } from '../user/vo/rawPassword.vo';
+import { CookieOptions, Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -37,6 +43,39 @@ export class AuthController {
     const user = await this.authApplicationService.signUp(signUpDto);
 
     return UserMapper.toResponseDto(user);
+  }
+
+  @Post('login')
+  async login(
+    @Res({ passthrough: true }) res: Response,
+    @Body() loginDto: LoginDto,
+  ) {
+    const { accessToken, refreshToken, user } =
+      await this.authApplicationService.login(
+        new LoginCommand(
+          new UserEmailVO(loginDto.email),
+          new UserRawPasswordVO(loginDto.password),
+        ),
+      );
+
+    this.setAuthCookies(res, accessToken, refreshToken);
+    return UserMapper.toResponseDto(user);
+  }
+
+  private setAuthCookies(
+    res: Response,
+    accessToken: string,
+    refreshToken: string,
+  ) {
+    const cookieOption: CookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+    };
+
+    res.cookie('accessToken', accessToken, cookieOption);
+    res.cookie('refreshToken', refreshToken, cookieOption);
   }
 
   @Post('verification/send')

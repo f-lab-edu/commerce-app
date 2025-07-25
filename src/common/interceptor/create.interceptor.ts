@@ -8,7 +8,7 @@ import { Request, Response } from 'express';
 import { Observable, tap } from 'rxjs';
 
 @Injectable()
-export class CreateHeaderInterceptor implements NestInterceptor {
+export class LocationHeaderInterceptor implements NestInterceptor {
   intercept(
     context: ExecutionContext,
     next: CallHandler<any>,

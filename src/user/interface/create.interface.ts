@@ -3,3 +3,5 @@ export interface IUserInput {
   name: string;
   password: string;
 }
+
+export type UserLoginInput = Omit<IUserInput, 'name'>;
