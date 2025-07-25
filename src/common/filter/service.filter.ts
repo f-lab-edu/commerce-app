@@ -19,16 +19,13 @@ export class ServiceExceptionFilter implements ExceptionFilter {
   catch(exception: CustomException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
+    this.logger.error(exception.getDebuggingMessage());
 
     const statusCode =
       this.reflector.get(HttpStatusCode, exception.constructor) ??
       HttpStatus.INTERNAL_SERVER_ERROR;
-
-    const message = exception.message;
-    this.logger.error(exception.getDebuggingMessage());
-
     this.setHeader(response, statusCode);
-    return response.status(statusCode).json({ message });
+    return response.status(statusCode).json({ message: exception.message });
   }
 
   setHeader(res: Response, statusCode: HttpStatus) {
