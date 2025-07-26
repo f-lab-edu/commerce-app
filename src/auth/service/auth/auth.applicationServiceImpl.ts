@@ -28,7 +28,7 @@ import { ConfigService } from '@nestjs/config';
 import { ConfigException } from '../../../common/exception/internal.exception';
 import { JwtConfigData, LoginResData } from '../../types/auth.type';
 
-type JwtPayload = {
+export type JwtPayload = {
   id: number;
 };
 

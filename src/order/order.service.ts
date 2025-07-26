@@ -1,10 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { IdempotencyService } from './idempotency.service';
 import { OrderCommand } from './command/order.command';
-import {
-  IDEMPOTENCY_STATUS,
-  IdempotencyKeyEntity,
-} from './entity/idempotency.entity';
 import { OrderDataAccess } from './order.repository';
 
 @Injectable()
@@ -15,7 +11,7 @@ export class OrderService {
   ) {}
 
   async makeOrder(orderCommand: OrderCommand) {
-    const { idempotencyKey, orderDto } = orderCommand;
+    const { idempotencyKey, orderDto, userId } = orderCommand;
     const idempotencyKeyEntity =
       await this.idempotencyService.find(idempotencyKey);
 
@@ -24,8 +20,14 @@ export class OrderService {
     /**
      * 주문 로직 실행.
      * 멱등성 로직을 우선 구현
-     * saveOrder는 미구현 상태
+     * 주문을 생성하는 로직은 아직 미구현
      */
-    const result = await this.orderDataAccess.saveOrder();
+    const result = (await this.orderDataAccess.saveOrder()) as any; // response
+    await this.idempotencyService.save({
+      key: idempotencyKey,
+      orderDto,
+      response: result,
+      userId,
+    });
   }
 }
