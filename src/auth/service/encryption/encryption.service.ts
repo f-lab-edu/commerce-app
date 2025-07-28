@@ -4,7 +4,11 @@ import { UserHashedPasswordVO } from '../../../user/vo/hashedPassword.vo';
 import { UserRawPasswordVO } from '../../../user/vo/rawPassword.vo';
 
 export interface EncryptionService {
-  hash: (password: UserRawPasswordVO) => Promise<UserHashedPasswordVO>;
+  hash(password: UserRawPasswordVO): Promise<UserHashedPasswordVO>;
+  compare(
+    rawPassword: UserRawPasswordVO,
+    hashedPassword: UserHashedPasswordVO,
+  ): Promise<boolean>;
 }
 
 export const EncryptionServiceToken = Symbol('EncryptionService');

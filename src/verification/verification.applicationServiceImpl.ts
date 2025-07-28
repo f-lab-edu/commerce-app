@@ -29,9 +29,9 @@ export class VerificationApplicationServiceImpl
     const isSendBlocked =
       await this.verificationService.isSendBlocked(verificationVO);
     if (isSendBlocked) {
-      throw new VerificationCodeAlreadySentException(
-        `유효한 인증정보가 있습니다. 전송된 인증코드를 확인해 주세요.`,
-      );
+      throw new VerificationCodeAlreadySentException({
+        clientMsg: `유효한 인증정보가 있습니다. 전송된 인증코드를 확인해 주세요.`,
+      });
     }
 
     const verificationCodeVO = new VeriCodeVO(VeriCodeVO.generate());
@@ -51,27 +51,27 @@ export class VerificationApplicationServiceImpl
       await this.verificationService.findLatestPendingVeri(emailVo);
 
     if (verificationEntity === null) {
-      throw new VerificationCodeNotFoundException(
-        `${to}로 발송된 인증정보가 없습니다.`,
-      );
+      throw new VerificationCodeNotFoundException({
+        clientMsg: `${to}로 발송된 인증정보가 없습니다.`,
+      });
     }
 
     if (verificationEntity.expiredAt < new Date()) {
-      throw new VerificationExpiredException(
-        '인증코드가 만료되었습니다. 다시 요청해주세요',
-      );
+      throw new VerificationExpiredException({
+        clientMsg: '인증코드가 만료되었습니다. 다시 요청해주세요',
+      });
     }
 
     if (!codeVo.equals(verificationEntity.code)) {
-      throw new VerificationCodeMismatchException(
-        `인증코드 ${codeVo.veriCode}는 일치하지 않는 인증코드입니다.. 올바른 인증코드로 다시 인증을 시도하여 주십시오.`,
-      );
+      throw new VerificationCodeMismatchException({
+        clientMsg: `인증코드 ${codeVo.veriCode}는 일치하지 않는 인증코드입니다.. 올바른 인증코드로 다시 인증을 시도하여 주십시오.`,
+      });
     }
 
     if (verificationEntity.status === VERIFICATION_STATUS.VERIFIED) {
-      throw new VerificationCodeAlreadyVerifiedException(
-        `인증코드 ${codeVo.veriCode}는 이미 처리된 인증코드입니다. 다시 시도하여 주시길 바랍니다.`,
-      );
+      throw new VerificationCodeAlreadyVerifiedException({
+        clientMsg: `인증코드 ${codeVo.veriCode}는 이미 처리된 인증코드입니다. 다시 시도하여 주시길 바랍니다.`,
+      });
     }
 
     const updateCommand = new UpdateVeriCommand({

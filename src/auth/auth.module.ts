@@ -5,16 +5,22 @@ import { EncryptionServiceProvider } from './service/encryption/encryption.servi
 import { AuthApplicationServiceProvider } from './service/auth/auth.applicationService';
 import { SignUpPolicyProvider } from './policy/signUp/signUp.policy';
 import { VerificationModule } from '../verification/verfication.module';
-import { CreateHeaderInterceptor } from '../common/interceptor/create.interceptor';
+import { LocationHeaderInterceptor } from '../common/interceptor/create.interceptor';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
-  imports: [UserModule, VerificationModule],
+  imports: [
+    UserModule,
+    VerificationModule,
+    JwtModule.register({ global: true }),
+  ],
   controllers: [AuthController],
   providers: [
     EncryptionServiceProvider,
     AuthApplicationServiceProvider,
     SignUpPolicyProvider,
-    CreateHeaderInterceptor,
+    LocationHeaderInterceptor,
   ],
 })
 export class AuthModule {}

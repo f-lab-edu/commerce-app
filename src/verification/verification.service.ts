@@ -168,12 +168,12 @@ export class VerificationService {
             },
           }),
         );
-        throw new VerificationCodeSendException(error.message);
+        throw new VerificationCodeSendException({ clientMsg: error.message });
       }
 
-      throw new VerificationCodeSendException(
-        '인증코드 저장에 실패했습니다. DB상태를 확인해주세요.',
-      );
+      throw new VerificationCodeSendException({
+        clientMsg: '인증코드 저장에 실패했습니다. DB상태를 확인해주세요.',
+      });
     }
   }
 }
