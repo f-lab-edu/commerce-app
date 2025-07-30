@@ -7,25 +7,17 @@ type OrderInput = {
 };
 
 export class OrderCommand {
-  private _idempotencyKey: string;
-  private _orderDto: OrderDto;
-  private _userId: number;
+  readonly idempotencyKey: string;
+  private readonly _orderDto: OrderDto;
+  readonly userId: number;
 
   constructor(param: OrderInput) {
-    this._idempotencyKey = param.key;
+    this.idempotencyKey = param.key;
     this._orderDto = param.orderDto;
-    this._userId = param.userId;
-  }
-
-  get userId() {
-    return this._userId;
-  }
-
-  get idempotencyKey() {
-    return this._idempotencyKey;
+    this.userId = param.userId;
   }
 
   get orderDto() {
-    return this._orderDto;
+    return { ...this._orderDto };
   }
 }

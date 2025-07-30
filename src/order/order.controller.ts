@@ -1,7 +1,7 @@
 import { Body, Controller, ParseUUIDPipe, Post } from '@nestjs/common';
 import { OrderDto } from './dto/order.dto';
 import { OrderService } from './order.service';
-import { CheckIfEmptyPipe } from '../common/pipe/empty.pipe';
+import { NonEmptyValidationPipe } from '../common/pipe/empty.pipe';
 import { CustomHeader } from '../common/decorator/customHeader.decorator';
 import { OrderCommand } from './command/order.command';
 import { JwtPipe } from '../common/pipe/jwt.pipe';
@@ -13,9 +13,9 @@ export class OrderController {
 
   @Post()
   async makeOrder(
-    @CustomHeader('idempotency-key', CheckIfEmptyPipe, ParseUUIDPipe)
+    @CustomHeader('idempotency-key', NonEmptyValidationPipe, ParseUUIDPipe)
     idempotencyKey: string,
-    @CustomHeader('authorization', CheckIfEmptyPipe, JwtPipe)
+    @CustomHeader('authorization', NonEmptyValidationPipe, JwtPipe)
     jwtPayload: JwtPayload,
     @Body()
     orderDto: OrderDto,

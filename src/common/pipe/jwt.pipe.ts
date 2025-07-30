@@ -1,5 +1,6 @@
 import {
   ArgumentMetadata,
+  BadRequestException,
   Injectable,
   PipeTransform,
   UnauthorizedException,
@@ -27,6 +28,10 @@ export class JwtPipe implements PipeTransform {
     return secret;
   }
 
+  private extractJwtTokenFrom(value: any) {
+    return value.substring(7);
+  }
+
   transform(value: any, metadata: ArgumentMetadata) {
     if (!value) {
       throw new UnauthorizedException('인증 토큰이 필요합니다.');
@@ -36,8 +41,7 @@ export class JwtPipe implements PipeTransform {
       throw new UnauthorizedException('올바른 인증 토큰이 아닙니다.');
     }
 
-    // Bearer token... 'Bearer '제거
-    const token = value.substring(7);
+    const token = this.extractJwtTokenFrom(value);
     const secret = this.getSecret();
     try {
       return this.jwtService.verify<JwtPayload>(token, { secret });
