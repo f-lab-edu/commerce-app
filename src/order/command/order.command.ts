@@ -1,18 +1,18 @@
 import { OrderDto } from '../dto/order.dto';
 
 type OrderInput = {
-  key: string;
+  orderReqestId: string;
   orderDto: OrderDto;
   userId: number;
 };
 
 export class OrderCommand {
-  readonly idempotencyKey: string;
+  readonly orderRequestId: string;
   private readonly _orderDto: OrderDto;
   readonly userId: number;
 
   constructor(param: OrderInput) {
-    this.idempotencyKey = param.key;
+    this.orderRequestId = param.orderReqestId;
     this._orderDto = param.orderDto;
     this.userId = param.userId;
   }

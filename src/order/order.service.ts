@@ -1,21 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { IdempotencyService } from './idempotency.service';
 import { OrderCommand } from './command/order.command';
 import { OrderDataAccess } from './order.repository';
+import { OrderRequestService } from './orderRequest.service';
 
 @Injectable()
 export class OrderService {
   constructor(
-    private readonly idempotencyService: IdempotencyService,
+    private readonly orderRequestService: OrderRequestService,
     private readonly orderDataAccess: OrderDataAccess,
   ) {}
 
   async makeOrder(orderCommand: OrderCommand) {
-    const { idempotencyKey, orderDto, userId } = orderCommand;
+    const { orderRequestId, orderDto, userId } = orderCommand;
     const idempotencyKeyEntity =
-      await this.idempotencyService.find(idempotencyKey);
+      await this.orderRequestService.find(orderRequestId);
 
-    this.idempotencyService.checkIfCanMakeOrder(idempotencyKeyEntity, orderDto);
+    this.orderRequestService.checkIfCanMakeOrder(
+      idempotencyKeyEntity,
+      orderDto,
+    );
 
     /**
      * 주문 로직 실행.
@@ -23,10 +26,10 @@ export class OrderService {
      * 주문을 생성하는 로직은 아직 미구현
      */
     const result = (await this.orderDataAccess.saveOrder()) as any; // response
-    await this.idempotencyService.save({
-      key: idempotencyKey,
+    await this.orderRequestService.save({
+      id: orderRequestId,
       orderDto,
-      response: result,
+      responseBody: result,
       userId,
     });
   }

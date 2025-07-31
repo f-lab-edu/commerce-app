@@ -1,4 +1,4 @@
-import { Body, Controller, ParseUUIDPipe, Post } from '@nestjs/common';
+import { Body, Controller, Get, ParseUUIDPipe, Post } from '@nestjs/common';
 import { OrderDto } from './dto/order.dto';
 import { OrderService } from './order.service';
 import { NonEmptyValidationPipe } from '../common/pipe/empty.pipe';
@@ -14,7 +14,7 @@ export class OrderController {
   @Post()
   async makeOrder(
     @CustomHeader('idempotency-key', NonEmptyValidationPipe, ParseUUIDPipe)
-    idempotencyKey: string,
+    orderReqestId: string,
     @CustomHeader('authorization', NonEmptyValidationPipe, JwtPipe)
     jwtPayload: JwtPayload,
     @Body()
@@ -22,7 +22,7 @@ export class OrderController {
   ) {
     return await this.orderService.makeOrder(
       new OrderCommand({
-        key: idempotencyKey,
+        orderReqestId,
         orderDto,
         userId: jwtPayload.id,
       }),
