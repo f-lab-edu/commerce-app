@@ -74,9 +74,9 @@ export class NodeMailerEmailSender implements EmailSender {
       });
     } catch (error) {
       console.error(error);
-      throw new EmailSendException(
-        `이메일 발송에 실패했습니다. ${error.message}`,
-      );
+      throw new EmailSendException({
+        clientMsg: `이메일 발송에 실패했습니다. ${error.message}`,
+      });
     }
   }
 }
