@@ -12,19 +12,20 @@ export class OrderService {
 
   async makeOrder(orderCommand: OrderCommand) {
     const { orderRequestId, orderDto, userId } = orderCommand;
-    const idempotencyKeyEntity =
-      await this.orderRequestService.find(orderRequestId);
+    const orderRequest = await this.orderRequestService.find(orderRequestId);
 
-    this.orderRequestService.checkIfCanMakeOrder(
-      idempotencyKeyEntity,
-      orderDto,
-    );
+    this.orderRequestService.validateOrderRequestStatus(orderRequest, orderDto);
 
     /**
-     * 주문 로직 실행.
-     * 멱등성 로직을 우선 구현
-     * 주문을 생성하는 로직은 아직 미구현
+     * 1. product의 각 아이템당 unitPrice * quantity = subtotal임을 검증
+     * 2. product 배열의 subtotal의 합이 order의 subtotal인지 검증
+     * 3. order의 subtotal + shippingfee = totalAmount 비교
+     * 4. product의 재고 validation
+     * 5. product의 재고 감소 및 주문 생성
+     *
+     *
      */
+
     const result = (await this.orderDataAccess.saveOrder()) as any; // response
     await this.orderRequestService.save({
       id: orderRequestId,
