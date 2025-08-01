@@ -2,12 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { OrderCommand } from './command/order.command';
 import { OrderDataAccess } from './order.repository';
 import { OrderRequestService } from './orderRequest.service';
+import { ProductPriceService } from '../product/productPrice.service';
 
 @Injectable()
 export class OrderService {
   constructor(
     private readonly orderRequestService: OrderRequestService,
     private readonly orderDataAccess: OrderDataAccess,
+    private readonly productPriceService: ProductPriceService,
   ) {}
 
   async makeOrder(orderCommand: OrderCommand) {
@@ -16,14 +18,15 @@ export class OrderService {
 
     this.orderRequestService.validateOrderRequestStatus(orderRequest, orderDto);
 
+    //1. product의 각 아이템당 unitPrice * quantity = subtotal임을 검증
+    // 클라이언트 측에서 넘어온 가격 검증
+    this.productPriceService.validateOrderProductsPrice(orderDto.orderItems);
+
     /**
-     * 1. product의 각 아이템당 unitPrice * quantity = subtotal임을 검증
      * 2. product 배열의 subtotal의 합이 order의 subtotal인지 검증
      * 3. order의 subtotal + shippingfee = totalAmount 비교
      * 4. product의 재고 validation
      * 5. product의 재고 감소 및 주문 생성
-     *
-     *
      */
 
     const result = (await this.orderDataAccess.saveOrder()) as any; // response

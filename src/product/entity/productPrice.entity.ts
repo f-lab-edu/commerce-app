@@ -19,6 +19,7 @@ const ProductPriceSchema = z.object({
 type BaseType = z.infer<typeof BaseSchema>;
 type ProductPriceType = z.infer<typeof ProductPriceSchema>;
 type IProductPriceEntity = BaseType & ProductPriceType;
+export type PersistedProductPriceEntity = Required<IProductPriceEntity>;
 
 @Entity({ name: 'product_prices' })
 export class ProductPriceEntity
