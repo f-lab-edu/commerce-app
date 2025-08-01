@@ -31,6 +31,8 @@ export interface IOrderEntity extends IBaseEntity {
   postalCode: string;
 }
 
+export type PersistedOrderEntity = Required<Omit<OrderEntity, 'orderDetails'>>;
+
 @Entity({ name: 'orders' })
 export class OrderEntity extends MyBaseEntity implements IOrderEntity {
   @Column({
