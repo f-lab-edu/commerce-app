@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { OrderDetailInputs } from '../order/dto/order.dto';
 import { ProductPriceDataAccess } from './productPrice.repository';
 import { PersistedProductPriceEntity } from './entity/productPrice.entity';
+import { ClientOrderInfoException } from '../common/exception/product.exception';
 
 @Injectable()
 export class ProductPriceService {
@@ -16,9 +17,18 @@ export class ProductPriceService {
     );
     const productPriceMap = this.generateProductMap(productPrices);
 
-    this.validateProductExistence(orderItems, productPriceMap);
-    this.validateUnitPrice(orderItems, productPriceMap);
-    this.validateSubtotal(orderItems, productPriceMap);
+    const validationRules = [
+      this.validateProductExistence(orderItems, productPriceMap),
+      this.validateUnitPrice(orderItems, productPriceMap),
+      this.validateSubtotal(orderItems, productPriceMap),
+    ];
+
+    const validationResult = validationRules.every(Boolean);
+    if (!validationResult) {
+      throw new ClientOrderInfoException({
+        clientMsg: '잘못된 주문정보입니다. 다시 한번 시도해 주세요.',
+      });
+    }
   }
 
   private generateProductMap(

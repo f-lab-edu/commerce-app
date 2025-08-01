@@ -18,9 +18,12 @@ export class OrderService {
 
     this.orderRequestService.validateOrderRequestStatus(orderRequest, orderDto);
 
-    //1. product의 각 아이템당 unitPrice * quantity = subtotal임을 검증
-    // 클라이언트 측에서 넘어온 가격 검증
-    this.productPriceService.validateOrderProductsPrice(orderDto.orderItems);
+    //
+    // 1. 클라이언트 측 데이터 검증: orderItem 각 아이템당 unitPrice * quantity = subtotal임을 검증
+    // 2. 서버 측 데이터 검증: 클라이언트에서 넘어온 상품이 실제로 있는지, 있다면 클라이언트에서 넘어온 가격과 디비에 저장된 현재 가격이 일치하는지 검증
+    await this.productPriceService.validateOrderProductsPrice(
+      orderDto.orderItems,
+    );
 
     /**
      * 2. product 배열의 subtotal의 합이 order의 subtotal인지 검증
