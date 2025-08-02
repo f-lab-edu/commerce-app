@@ -52,9 +52,9 @@ export class ProductPriceEntity
     super(param);
   }
 
-  static create(param: ProductPriceType) {
+  static create(param: IProductPriceEntity) {
     const safeParsedParam = ProductPriceSchema.parse(param);
-    const entity = new ProductPriceEntity();
+    const entity = new ProductPriceEntity(param);
     Object.assign(entity, safeParsedParam);
     return entity;
   }
