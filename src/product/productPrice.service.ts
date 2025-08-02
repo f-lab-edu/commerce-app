@@ -1,16 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { OrderDetailInputs } from '../order/dto/order.dto';
+import { OrderDetailInputs, OrderDto } from '../order/dto/order.dto';
 import { ProductPriceDataAccess } from './productPrice.repository';
 import { PersistedProductPriceEntity } from './entity/productPrice.entity';
 import { ClientOrderInfoException } from '../common/exception/product.exception';
+import { BasicClientOrderInfoException } from '../order/policy/order.policy';
 
+type PriceMap = Record<number, PersistedProductPriceEntity>;
 @Injectable()
 export class ProductPriceService {
   constructor(
     private readonly productPriceDataAccess: ProductPriceDataAccess,
   ) {}
 
-  async validateOrderProductsPrice(orderItems: OrderDetailInputs[]) {
+  async validateOrderProductsPrice(orderDto: OrderDto) {
+    const { orderItems } = orderDto;
     const productIds = orderItems.map((orderItem) => orderItem.productId);
     const productPrices = await Promise.all(
       productIds.map((id) => this.productPriceDataAccess.findById(id)),
@@ -21,19 +24,18 @@ export class ProductPriceService {
       this.validateProductExistence(orderItems, productPriceMap),
       this.validateUnitPrice(orderItems, productPriceMap),
       this.validateSubtotal(orderItems, productPriceMap),
+      this.validateOrderSubtotal(orderDto.subtotal, productPriceMap),
     ];
 
     const validationResult = validationRules.every(Boolean);
     if (!validationResult) {
-      throw new ClientOrderInfoException({
-        clientMsg: '잘못된 주문정보입니다. 다시 한번 시도해 주세요.',
-      });
+      throw BasicClientOrderInfoException;
     }
   }
 
   private generateProductMap(
     productPrices: (PersistedProductPriceEntity | null)[],
-  ): Record<number, PersistedProductPriceEntity> {
+  ): PriceMap {
     return productPrices.filter(Boolean).reduce((prev, cur) => {
       if (cur) {
         prev[cur.id] = cur;
@@ -44,14 +46,14 @@ export class ProductPriceService {
 
   private validateProductExistence(
     orderItems: OrderDetailInputs[],
-    priceMap: Record<number, PersistedProductPriceEntity>,
+    priceMap: PriceMap,
   ) {
     return orderItems.every((item) => priceMap[item.productId] !== undefined);
   }
 
   private validateUnitPrice(
     orderItems: OrderDetailInputs[],
-    priceMap: Record<number, PersistedProductPriceEntity>,
+    priceMap: PriceMap,
   ) {
     return orderItems.every(
       (item) => item.unitPrice === priceMap[item.productId].price,
@@ -60,7 +62,7 @@ export class ProductPriceService {
 
   private validateSubtotal(
     orderItems: OrderDetailInputs[],
-    priceMap: Record<number, PersistedProductPriceEntity>,
+    priceMap: PriceMap,
   ) {
     const validate = (item: OrderDetailInputs) => {
       const wrongSubtotalByItemPrice =
@@ -79,5 +81,14 @@ export class ProductPriceService {
     };
 
     return orderItems.every(validate);
+  }
+
+  private validateOrderSubtotal(clientSubtotal: number, priceMap: PriceMap) {
+    const subtotalByServerPrice = Object.values(priceMap).reduce(
+      (prev, p) => prev + p.price,
+      0,
+    );
+
+    return clientSubtotal === subtotalByServerPrice;
   }
 }

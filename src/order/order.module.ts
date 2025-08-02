@@ -9,11 +9,20 @@ import { OrderRequestService } from './orderRequest.service';
 import { OrderDataAccess } from './order.repository';
 import { ProductPriceDataAccess } from '../product/productPrice.repository';
 import { ProductPriceService } from '../product/productPrice.service';
+import { ProductPriceEntity } from '../product/entity/productPrice.entity';
+import { OrderPolicyService } from './policy/order.policy';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([OrderEntity, OrderRequestEntity])],
+  imports: [
+    TypeOrmModule.forFeature([
+      OrderEntity,
+      OrderRequestEntity,
+      ProductPriceEntity,
+    ]),
+  ],
   providers: [
     OrderService,
+    OrderPolicyService,
     OrderRequestService,
     JwtPipe,
     OrderDataAccess,
