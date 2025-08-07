@@ -13,27 +13,46 @@ export class ProductService {
   async getPopularTopK(limit: number, month: number, price: Range) {
     return await this.productRepository.getPopularTopK(limit, month, price);
   }
-  async validateStocks(orderItems: OrderItemsInput[]) {
+
+  // 재고 검증과 재고 차감 순서를 강제합니다.
+  async validateAndDecreaseStocks(orderItems: OrderItemsInput[]) {
+    const products = await this.validateStocks(orderItems);
+    return await this.decreaseStocks(orderItems, products);
+  }
+
+  private async validateStocks(orderItems: OrderItemsInput[]) {
     const productIds = orderItems.map((oi) => oi.productId);
     const products = await this.productRepository.findMany(productIds);
     const productMap = this.generateProductMap(products);
 
-    const checkIfOrderItemsHasMoreStock = (oi: OrderItemsInput) =>
+    const checkIfOverOrdered = (oi: OrderItemsInput) =>
       oi.quantity > productMap[oi.productId].stocks;
 
-    const overOrderedItems = orderItems.filter(checkIfOrderItemsHasMoreStock);
+    const overOrderedItems = orderItems.filter(checkIfOverOrdered);
     if (overOrderedItems.length > 0) {
       throw new ProductStockException({
         clientMsg: `${overOrderedItems
           .map((oi) => productMap[oi.productId].name)
-          .join(', ')}재고가 맞지 않습니다.`,
-        devMsg: `재고가 맞지 않는 상품 아이디. ${overOrderedItems.map((oi) => oi.productId).join(', ')}`,
+          .join(', ')}는 주문수량이 재고보다 많습니다.`,
+        devMsg: `주문수량과 재고가 맞지 않는 주문상품 아이디. ${overOrderedItems.map((oi) => oi.productId).join(', ')}`,
       });
     }
+
+    return products;
   }
 
-  async decreaseStocks(orderItems: OrderItemsInput[]) {
-    return await this.productRepository.decreaseStocks(orderItems);
+  private async decreaseStocks(
+    orderItems: OrderItemsInput[],
+    products: PersistedProductEntity[],
+  ) {
+    const productsMap = this.generateProductMap(products);
+    const productsWithDecreasedStocks = orderItems.map((oi) => {
+      const product = productsMap[oi.productId];
+      product.stocks -= oi.quantity;
+      return product;
+    });
+
+    return await this.productRepository.save(productsWithDecreasedStocks);
   }
 
   private generateProductMap(

@@ -1,6 +1,7 @@
 import { ClsService } from 'nestjs-cls';
 import {
   DataSource,
+  DeepPartial,
   EntityManager,
   EntityTarget,
   ObjectLiteral,
@@ -19,5 +20,9 @@ export abstract class BaseRepository<T extends ObjectLiteral> {
 
   protected getRepository(entity: EntityTarget<T>): Repository<T> {
     return this.getManager().getRepository(entity);
+  }
+
+  save(entity: T | T[]) {
+    return this.getRepository(entity.constructor).save(entity as any);
   }
 }

@@ -10,6 +10,16 @@ import { finalize, Observable, Subscriber, tap, TeardownLogic } from 'rxjs';
 import { DataSource } from 'typeorm';
 
 export const TRANSACTION_MANAGER = 'TRANSACTION_MANAGER';
+
+/**
+ * 트랜잭션이 필요한 메소드에 사용하는 데코레이터
+ *
+ * @example
+ * ```typescript
+ * \@Transactional()
+ * async doSomething(param: ParamType) { ... }
+ * ```
+ */
 export const Transactional = Reflector.createDecorator<boolean>({
   transform: () => true,
 });
