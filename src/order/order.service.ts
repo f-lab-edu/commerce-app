@@ -1,19 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { OrderCommand } from './command/order.command';
-import { OrderDataAccess } from './order.repository';
 import { OrderRequestService } from './orderRequest.service';
 import { ProductPriceService } from '../product/productPrice.service';
 import { OrderPolicyService } from './policy/order.policy';
+import { OrderRepository } from './order.repository';
+import { Transactional } from '../common/decorator/transaction.decorator';
 
 @Injectable()
 export class OrderService {
   constructor(
     private readonly orderRequestService: OrderRequestService,
-    private readonly orderDataAccess: OrderDataAccess,
+    private readonly orderRepository: OrderRepository,
     private readonly productPriceService: ProductPriceService,
     private readonly orderPolicyService: OrderPolicyService,
   ) {}
 
+  @Transactional()
   async makeOrder(orderCommand: OrderCommand) {
     const { orderRequestId, orderDto, userId } = orderCommand;
     const orderRequest = await this.orderRequestService.find(orderRequestId);
@@ -26,15 +28,16 @@ export class OrderService {
     // 3. product 배열의 subtotal의 합이 order의 subtotal인지 검증
     await this.productPriceService.validateOrderProductsPrice(orderDto);
 
-    // 4. order의 subtotal + shippingfee = totalAmount 비교
+    // 4. client 배송비와 서버 측에서 저장하고 있는 배송비를 비교
     this.orderPolicyService.validateOrder(orderDto);
 
     /**
-     * 4. product의 재고 validation
-     * 5. product의 재고 감소 및 주문 생성
+     * 1. product의 재고를 검사
+     * 2. 재고가 충분하면 재고 감소, 재고가 충분하지 않으면 에러
+     * 3. 재고가 불충분하면 롤백 및 주문 전체 취소
      */
 
-    const result = (await this.orderDataAccess.saveOrder()) as any; // response
+    const result = (await this.orderRepository.saveOrder()) as any; // response
     await this.orderRequestService.save({
       id: orderRequestId,
       orderDto,

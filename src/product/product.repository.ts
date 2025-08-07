@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { PersistedProductEntity, ProductEntity } from './entity/product.entity';
-import { Repository } from 'typeorm';
+import { ProductEntity } from './entity/product.entity';
+import { DataSource } from 'typeorm';
 import { OrderDetailEntity } from '../orderDetail/entity/orderDetail.entity';
+import { BaseRepository } from '../common/repository/base.repository';
+import { ClsService } from 'nestjs-cls';
 
 export type Range = {
   min: number;
@@ -10,11 +11,13 @@ export type Range = {
 };
 
 @Injectable()
-export class ProductDataAccess {
+export class ProductRepository extends BaseRepository<ProductEntity> {
   constructor(
-    @InjectRepository(ProductEntity)
-    private productRepository: Repository<PersistedProductEntity>,
-  ) {}
+    protected readonly dataSource: DataSource,
+    protected readonly clsService: ClsService,
+  ) {
+    super(clsService, dataSource, ProductEntity);
+  }
 
   /**
    *
@@ -28,8 +31,8 @@ export class ProductDataAccess {
    *    - salesRank: 판매량 순위 (1부터 시작)
    */
   async getPopularTopK(limit: number, month: number, price: Range) {
-    const popularTopProducts = await this.productRepository
-      .createQueryBuilder('p')
+    const popularTopProducts = await this.getManager()
+      .createQueryBuilder(ProductEntity, 'p')
       .select([
         'p.id AS id',
         'p.name as name',

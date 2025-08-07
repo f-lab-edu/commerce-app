@@ -1,14 +1,17 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { OrderEntity } from './entity/order.entity';
-import { Repository } from 'typeorm';
+import { DataSource } from 'typeorm';
+import { ClsService } from 'nestjs-cls';
+import { BaseRepository } from '../common/repository/base.repository';
 
 @Injectable()
-export class OrderDataAccess {
+export class OrderRepository extends BaseRepository<OrderEntity> {
   constructor(
-    @InjectRepository(OrderEntity)
-    private readonly orderRepository: Repository<OrderEntity>,
-  ) {}
+    protected readonly dataSource: DataSource,
+    protected readonly clsService: ClsService,
+  ) {
+    super(clsService, dataSource, OrderEntity);
+  }
 
   async saveOrder() {
     throw new NotImplementedException();

@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { ProductDataAccess, Range } from './product.repository';
+import { ProductRepository, Range } from './product.repository';
 
 @Injectable()
 export class ProductService {
-  constructor(private productDataAccess: ProductDataAccess) {}
+  constructor(private readonly productRepository: ProductRepository) {}
 
   async getPopularTopK(limit: number, month: number, price: Range) {
-    return await this.productDataAccess.getPopularTopK(limit, month, price);
+    return await this.productRepository.getPopularTopK(limit, month, price);
   }
 }
