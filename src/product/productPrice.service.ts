@@ -4,7 +4,8 @@ import { PersistedProductPriceEntity } from './entity/productPrice.entity';
 import { BasicClientOrderInfoException } from '../order/policy/order.policy';
 import { ProductPriceRepository } from './productPrice.repository';
 
-type PriceMap = Record<number, PersistedProductPriceEntity>;
+export type Map<T> = Record<number, T>;
+type PriceMap = Map<PersistedProductPriceEntity>;
 @Injectable()
 export class ProductPriceService {
   constructor(
@@ -29,7 +30,6 @@ export class ProductPriceService {
       ),
     ];
 
-    console.log(validationRules);
     const validationResult = validationRules.every(Boolean);
     if (!validationResult) {
       throw BasicClientOrderInfoException;
@@ -55,7 +55,6 @@ export class ProductPriceService {
   }
 
   private validateUnitPrice(orderItems: OrderItemsInput[], priceMap: PriceMap) {
-    console.log(orderItems, priceMap);
     return orderItems.every(
       (item) => item.unitPrice === priceMap[item.productId].price,
     );
@@ -94,8 +93,6 @@ export class ProductPriceService {
       (prev, p) => prev + p.price * quantityMap[p.productId],
       0,
     );
-
-    console.log(clientSubtotal, subtotalByServerPrice);
 
     return clientSubtotal === subtotalByServerPrice;
   }

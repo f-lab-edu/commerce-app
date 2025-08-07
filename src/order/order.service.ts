@@ -6,6 +6,7 @@ import { OrderPolicyService } from './policy/order.policy';
 import { OrderRepository } from './order.repository';
 import { Transactional } from '../common/decorator/transaction.decorator';
 import { ProductService } from '../product/product.service';
+import { OrderItemsInput } from './dto/order.dto';
 
 @Injectable()
 export class OrderService {
@@ -38,8 +39,9 @@ export class OrderService {
      * 2. 재고가 충분하면 재고 감소, 재고가 충분하지 않으면 에러
      * 3. 재고가 불충분하면 롤백 및 주문 전체 취소
      */
-    const productIds = orderDto.orderItems.map((oi) => oi.productId);
-    await this.productService.validateStocks(productIds);
+
+    await this.productService.validateStocks(orderDto.orderItems);
+    await this.productService.decreaseStocks(orderDto.orderItems);
 
     const result = (await this.orderRepository.saveOrder()) as any; // response
     await this.orderRequestService.save({

@@ -4,6 +4,8 @@ import { DataSource, In } from 'typeorm';
 import { OrderDetailEntity } from '../orderDetail/entity/orderDetail.entity';
 import { BaseRepository } from '../common/repository/base.repository';
 import { ClsService } from 'nestjs-cls';
+import { OrderItemsInput } from '../order/dto/order.dto';
+import { ProductUpdateException } from '../common/exception/product.exception';
 
 export type Range = {
   min: number;
@@ -67,5 +69,30 @@ export class ProductRepository extends BaseRepository<PersistedProductEntity> {
       },
     });
     return products;
+  }
+
+  async decreaseStocks(orderItems: OrderItemsInput[]) {
+    const updateQuries = orderItems.map((oi) =>
+      this.getRepository(ProductEntity)
+        .createQueryBuilder()
+        .update()
+        .set({
+          stocks: () => `stocks - ${oi.quantity}`,
+        })
+        .where(`id = :productId`, { productId: oi.productId })
+        .andWhere(`stocks >= :quantity`, { quantity: oi.quantity })
+        .execute(),
+    );
+    const result = await Promise.all(updateQuries);
+    const affectedRows = result
+      .map((r) => r.affected!)
+      .reduce((prev, cur) => prev + cur, 0);
+
+    if (orderItems.length !== affectedRows) {
+      throw new ProductUpdateException({
+        clientMsg:
+          '재고 업데이트에 문제가 발생했습니다. 다시 한번 시도해 주시길 바랍니다.',
+      });
+    }
   }
 }
