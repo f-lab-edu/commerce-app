@@ -15,12 +15,16 @@ export class ProductService {
   }
 
   // 재고 검증과 재고 차감 순서를 강제합니다.
-  async validateAndDecreaseStocks(orderItems: OrderItemsInput[]) {
+  async validateAndDecreaseStocks(
+    orderItems: OrderItemsInput[],
+  ): Promise<void> {
     const products = await this.validateStocks(orderItems);
-    return await this.decreaseStocks(orderItems, products);
+    await this.decreaseStocks(orderItems, products);
   }
 
-  private async validateStocks(orderItems: OrderItemsInput[]) {
+  private async validateStocks(
+    orderItems: OrderItemsInput[],
+  ): Promise<PersistedProductEntity[]> {
     const productIds = orderItems.map((oi) => oi.productId);
     const products = await this.productRepository.findMany(productIds);
     const productMap = this.generateProductMap(products);
@@ -44,7 +48,7 @@ export class ProductService {
   private async decreaseStocks(
     orderItems: OrderItemsInput[],
     products: PersistedProductEntity[],
-  ) {
+  ): Promise<PersistedProductEntity[]> {
     const productsMap = this.generateProductMap(products);
     const productsWithDecreasedStocks = orderItems.map((oi) => {
       const product = productsMap[oi.productId];

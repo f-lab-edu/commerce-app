@@ -39,7 +39,7 @@ export class OrderService {
      * 2. 재고가 충분하면 재고 감소, 재고가 충분하지 않으면 에러
      * 3. 재고가 불충분하면 롤백 및 주문 전체 취소
      */
-    this.productService.validateAndDecreaseStocks(orderDto.orderItems);
+    await this.productService.validateAndDecreaseStocks(orderDto.orderItems);
 
     /**
      * TODO
