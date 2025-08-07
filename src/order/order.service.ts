@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Global, Injectable } from '@nestjs/common';
 import { OrderCommand } from './command/order.command';
 import { OrderRequestService } from './orderRequest.service';
 import { ProductPriceService } from '../product/productPrice.service';
 import { OrderPolicyService } from './policy/order.policy';
 import { OrderRepository } from './order.repository';
 import { Transactional } from '../common/decorator/transaction.decorator';
+import { ProductService } from '../product/product.service';
 
 @Injectable()
 export class OrderService {
@@ -13,6 +14,7 @@ export class OrderService {
     private readonly orderRepository: OrderRepository,
     private readonly productPriceService: ProductPriceService,
     private readonly orderPolicyService: OrderPolicyService,
+    private readonly productService: ProductService,
   ) {}
 
   @Transactional()
@@ -36,6 +38,8 @@ export class OrderService {
      * 2. 재고가 충분하면 재고 감소, 재고가 충분하지 않으면 에러
      * 3. 재고가 불충분하면 롤백 및 주문 전체 취소
      */
+    const productIds = orderDto.orderItems.map((oi) => oi.productId);
+    await this.productService.validateStocks(productIds);
 
     const result = (await this.orderRepository.saveOrder()) as any; // response
     await this.orderRequestService.save({

@@ -15,8 +15,8 @@ export class OrderController {
   async makeOrder(
     @CustomHeader('idempotency-key', NonEmptyValidationPipe, ParseUUIDPipe)
     orderReqestId: string,
-    @CustomHeader('authorization', NonEmptyValidationPipe, JwtPipe)
-    jwtPayload: JwtPayload,
+    // @CustomHeader('authorization', NonEmptyValidationPipe, JwtPipe)
+    // jwtPayload: JwtPayload,
     @Body()
     orderDto: OrderDto,
   ) {
@@ -24,7 +24,7 @@ export class OrderController {
       new OrderCommand({
         orderReqestId,
         orderDto,
-        userId: jwtPayload.id,
+        userId: 15092785,
       }),
     );
   }
