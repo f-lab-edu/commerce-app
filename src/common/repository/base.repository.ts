@@ -23,6 +23,9 @@ export abstract class BaseRepository<T extends ObjectLiteral> {
   }
 
   save(entity: T | T[]) {
-    return this.getRepository(entity.constructor).save(entity as any);
+    const entityConstructor = Array.isArray(entity)
+      ? entity[0].constructor
+      : entity.constructor;
+    return this.getRepository(entityConstructor).save(entity as any);
   }
 }
