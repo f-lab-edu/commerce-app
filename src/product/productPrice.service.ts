@@ -1,35 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { OrderItemsInput, OrderDto } from '../order/dto/order.dto';
+import { OrderDetailInputs, OrderDto } from '../order/dto/order.dto';
+import { ProductPriceDataAccess } from './productPrice.repository';
 import { PersistedProductPriceEntity } from './entity/productPrice.entity';
+import { ClientOrderInfoException } from '../common/exception/product.exception';
 import { BasicClientOrderInfoException } from '../order/policy/order.policy';
-import { ProductPriceRepository } from './productPrice.repository';
 
 type PriceMap = Record<number, PersistedProductPriceEntity>;
 @Injectable()
 export class ProductPriceService {
   constructor(
-    private readonly productPriceRepository: ProductPriceRepository,
+    private readonly productPriceDataAccess: ProductPriceDataAccess,
   ) {}
 
   async validateOrderProductsPrice(orderDto: OrderDto) {
     const { orderItems } = orderDto;
     const productIds = orderItems.map((orderItem) => orderItem.productId);
-    const productPrices =
-      await this.productPriceRepository.findMany(productIds);
+    const productPrices = await Promise.all(
+      productIds.map((id) => this.productPriceDataAccess.findById(id)),
+    );
     const productPriceMap = this.generateProductMap(productPrices);
 
     const validationRules = [
       this.validateProductExistence(orderItems, productPriceMap),
       this.validateUnitPrice(orderItems, productPriceMap),
       this.validateSubtotal(orderItems, productPriceMap),
-      this.validateOrderSubtotal(
-        orderDto.subtotal,
-        productPriceMap,
-        orderItems,
-      ),
+      this.validateOrderSubtotal(orderDto.subtotal, productPriceMap),
     ];
 
-    console.log(validationRules);
     const validationResult = validationRules.every(Boolean);
     if (!validationResult) {
       throw BasicClientOrderInfoException;
@@ -41,28 +38,33 @@ export class ProductPriceService {
   ): PriceMap {
     return productPrices.filter(Boolean).reduce((prev, cur) => {
       if (cur) {
-        prev[cur.productId] = cur;
+        prev[cur.id] = cur;
       }
       return prev;
     }, {});
   }
 
   private validateProductExistence(
-    orderItems: OrderItemsInput[],
+    orderItems: OrderDetailInputs[],
     priceMap: PriceMap,
   ) {
     return orderItems.every((item) => priceMap[item.productId] !== undefined);
   }
 
-  private validateUnitPrice(orderItems: OrderItemsInput[], priceMap: PriceMap) {
-    console.log(orderItems, priceMap);
+  private validateUnitPrice(
+    orderItems: OrderDetailInputs[],
+    priceMap: PriceMap,
+  ) {
     return orderItems.every(
       (item) => item.unitPrice === priceMap[item.productId].price,
     );
   }
 
-  private validateSubtotal(orderItems: OrderItemsInput[], priceMap: PriceMap) {
-    const validate = (item: OrderItemsInput) => {
+  private validateSubtotal(
+    orderItems: OrderDetailInputs[],
+    priceMap: PriceMap,
+  ) {
+    const validate = (item: OrderDetailInputs) => {
       const wrongSubtotalByItemPrice =
         item.subtotal != item.quantity * item.unitPrice;
       if (wrongSubtotalByItemPrice) {
@@ -81,21 +83,11 @@ export class ProductPriceService {
     return orderItems.every(validate);
   }
 
-  private validateOrderSubtotal(
-    clientSubtotal: number,
-    priceMap: PriceMap,
-    orderItems: OrderItemsInput[],
-  ) {
-    const quantityMap = orderItems.reduce((prev, cur) => {
-      prev[cur.productId] = cur.quantity;
-      return prev;
-    }, {});
+  private validateOrderSubtotal(clientSubtotal: number, priceMap: PriceMap) {
     const subtotalByServerPrice = Object.values(priceMap).reduce(
-      (prev, p) => prev + p.price * quantityMap[p.productId],
+      (prev, p) => prev + p.price,
       0,
     );
-
-    console.log(clientSubtotal, subtotalByServerPrice);
 
     return clientSubtotal === subtotalByServerPrice;
   }

@@ -7,17 +7,20 @@ import {
   Repository,
 } from 'typeorm';
 import { TRANSACTION_MANAGER } from '../decorator/transaction.decorator';
+import { Injectable } from '@nestjs/common';
 
-export abstract class BaseRepository<T extends ObjectLiteral> {
+@Injectable()
+export abstract class BaseRepository<
+  T extends ObjectLiteral,
+> extends Repository<T> {
   constructor(
     protected readonly clsService: ClsService,
     protected readonly dataSource: DataSource,
-  ) {}
-  protected getManager(): EntityManager {
-    return this.clsService.get(TRANSACTION_MANAGER) ?? this.dataSource.manager;
+    protected readonly entity: EntityTarget<T>,
+  ) {
+    super(entity, dataSource.createEntityManager());
   }
-
-  protected getRepository(entity: EntityTarget<T>): Repository<T> {
-    return this.getManager().getRepository(entity);
+  protected getManager(): EntityManager {
+    return this.clsService.get(TRANSACTION_MANAGER) ?? this.manager;
   }
 }

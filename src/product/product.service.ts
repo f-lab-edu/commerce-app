@@ -8,9 +8,4 @@ export class ProductService {
   async getPopularTopK(limit: number, month: number, price: Range) {
     return await this.productRepository.getPopularTopK(limit, month, price);
   }
-  async validateStocks(productIds: number[]) {
-    const products = await this.productRepository.findMany(productIds);
-
-    console.log({ products });
-  }
 }

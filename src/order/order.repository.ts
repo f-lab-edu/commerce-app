@@ -10,7 +10,7 @@ export class OrderRepository extends BaseRepository<OrderEntity> {
     protected readonly dataSource: DataSource,
     protected readonly clsService: ClsService,
   ) {
-    super(clsService, dataSource);
+    super(clsService, dataSource, OrderEntity);
   }
 
   async saveOrder() {

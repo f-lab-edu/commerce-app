@@ -1,7 +1,6 @@
 import {
   ArgumentMetadata,
   BadRequestException,
-  Global,
   Injectable,
   PipeTransform,
   UnauthorizedException,

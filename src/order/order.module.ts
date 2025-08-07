@@ -6,12 +6,11 @@ import { OrderService } from './order.service';
 import { JwtPipe } from '../common/pipe/jwt.pipe';
 import { OrderRequestEntity } from './entity/orderRequest.entity';
 import { OrderRequestService } from './orderRequest.service';
+import { ProductPriceDataAccess } from '../product/productPrice.repository';
 import { ProductPriceService } from '../product/productPrice.service';
 import { ProductPriceEntity } from '../product/entity/productPrice.entity';
 import { OrderPolicyService } from './policy/order.policy';
 import { OrderRepository } from './order.repository';
-import { ProductModule } from '../product/product.module';
-import { ProductPriceRepository } from '../product/productPrice.repository';
 
 @Module({
   imports: [
@@ -20,7 +19,6 @@ import { ProductPriceRepository } from '../product/productPrice.repository';
       OrderRequestEntity,
       ProductPriceEntity,
     ]),
-    ProductModule,
   ],
   providers: [
     OrderService,
@@ -28,7 +26,7 @@ import { ProductPriceRepository } from '../product/productPrice.repository';
     OrderRequestService,
     JwtPipe,
     OrderRepository,
-    ProductPriceRepository,
+    ProductPriceDataAccess,
     ProductPriceService,
   ],
   controllers: [OrderController],

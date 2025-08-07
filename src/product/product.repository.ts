@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { PersistedProductEntity, ProductEntity } from './entity/product.entity';
-import { DataSource, In } from 'typeorm';
+import { ProductEntity } from './entity/product.entity';
+import { DataSource } from 'typeorm';
 import { OrderDetailEntity } from '../orderDetail/entity/orderDetail.entity';
 import { BaseRepository } from '../common/repository/base.repository';
 import { ClsService } from 'nestjs-cls';
@@ -11,12 +11,12 @@ export type Range = {
 };
 
 @Injectable()
-export class ProductRepository extends BaseRepository<PersistedProductEntity> {
+export class ProductRepository extends BaseRepository<ProductEntity> {
   constructor(
     protected readonly dataSource: DataSource,
     protected readonly clsService: ClsService,
   ) {
-    super(clsService, dataSource);
+    super(clsService, dataSource, ProductEntity);
   }
 
   /**
@@ -53,19 +53,5 @@ export class ProductRepository extends BaseRepository<PersistedProductEntity> {
       .getRawMany();
 
     return popularTopProducts;
-  }
-
-  async findMany(productIds: number[]) {
-    /**
-     * 상품 조회시 lock 추후 적용.
-     * 현재는 우선 트랜잭션 로직만 작성
-     */
-
-    const products = await this.getRepository(ProductEntity).find({
-      where: {
-        id: In(productIds),
-      },
-    });
-    return products;
   }
 }

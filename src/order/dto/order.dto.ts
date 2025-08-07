@@ -17,7 +17,6 @@ import { UserNameVO } from '../../user/vo/name.vo';
 import { AddressVO } from '../vo/address.vo';
 import { PostalCodeVO } from '../vo/postalCode.vo';
 import { IsValidTotalAmount } from '../utils/isValidTotalAmount.decorator';
-import { Type } from 'class-transformer';
 
 type WithoutBaseEntity<T> = Omit<T, keyof IBaseEntity>;
 
@@ -25,7 +24,7 @@ type IOrderInput = Omit<
   WithoutBaseEntity<IOrderEntity>,
   'userId' | 'orderStatus'
 >;
-type IOrderItemsInput = Omit<WithoutBaseEntity<IOrderDetail>, 'orderId'>;
+type IOrderDetailInput = Omit<WithoutBaseEntity<IOrderDetail>, 'orderId'>;
 
 export class OrderDto implements IOrderInput {
   @IsInt()
@@ -58,16 +57,15 @@ export class OrderDto implements IOrderInput {
   shippingDetailAddress?: string | undefined;
 
   @IsString()
-  @Length(PostalCodeVO.constraints.minLen, PostalCodeVO.constraints.maxLen)
+  @Length(PostalCodeVO.constraints.minLen, PostalCodeVO.constraints.minLen)
   postalCode: string;
 
   @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => OrderItemsInput)
-  orderItems: OrderItemsInput[];
+  @ValidateNested()
+  orderItems: OrderDetailInputs[];
 }
 
-export class OrderItemsInput implements IOrderItemsInput {
+export class OrderDetailInputs implements IOrderDetailInput {
   @IsInt()
   @Min(0)
   productId: number;
