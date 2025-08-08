@@ -17,9 +17,9 @@ export class ProductService {
   // 재고 검증과 재고 차감 순서를 강제합니다.
   async validateAndDecreaseStocks(
     orderItems: OrderItemsInput[],
-  ): Promise<void> {
+  ): Promise<PersistedProductEntity[]> {
     const products = await this.validateStocks(orderItems);
-    await this.decreaseStocks(orderItems, products);
+    return await this.decreaseStocks(orderItems, products);
   }
 
   private async validateStocks(
