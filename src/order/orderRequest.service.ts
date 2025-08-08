@@ -25,7 +25,7 @@ export class OrderRequestService {
     });
   }
 
-  checkIfCanMakeOrder(
+  validateOrderRequestStatus(
     orderRequest: OrderRequestEntity | null,
     payload: OrderDto,
   ) {
