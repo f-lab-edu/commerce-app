@@ -26,7 +26,7 @@ export const Transactional = Reflector.createDecorator<boolean>({
 
 /**
  * APP 모듈에 사용되는 트랜잭션용 전역 인터셉터
- * 메타 데이터를 확인해 트랜잭션요 엔터티 매니저를 생성
+ * 메타 데이터를 확인해 트랜잭션용 엔터티 매니저를 생성
  */
 @Injectable()
 export class TransactionInterceptor implements NestInterceptor {
