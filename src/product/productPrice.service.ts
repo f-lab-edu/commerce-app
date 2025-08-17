@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { OrderItemsInput, OrderDto } from '../order/dto/order.dto';
 import { PersistedProductPriceEntity } from './entity/productPrice.entity';
-import { BasicClientOrderInfoException } from '../order/policy/order.policy';
 import { ProductPriceRepository } from './productPrice.repository';
+import { ClientOrderInfoException } from '../common/exception/product.exception';
 
 export type Map<T> = Record<number, T>;
 type PriceMap = Map<PersistedProductPriceEntity>;
@@ -32,7 +32,7 @@ export class ProductPriceService {
 
     const validationResult = validationRules.every(Boolean);
     if (!validationResult) {
-      throw BasicClientOrderInfoException;
+      throw new ClientOrderInfoException();
     }
   }
 

@@ -1,7 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
 import { HttpStatusCode } from '../decorator/httpCode.decorator';
 
-type ExceptionParams = {
+export type ExceptionParams = {
   clientMsg: string;
   devMsg?: string;
   option?: ErrorOptions;
