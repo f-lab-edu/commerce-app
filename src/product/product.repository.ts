@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { PersistedProductEntity, ProductEntity } from './entity/product.entity';
-import { Repository } from 'typeorm';
+import { DataSource, In } from 'typeorm';
 import { OrderDetailEntity } from '../orderDetail/entity/orderDetail.entity';
+import { BaseRepository } from '../common/repository/base.repository';
+import { ClsService } from 'nestjs-cls';
+import { OrderItemsInput } from '../order/dto/order.dto';
+import { ProductUpdateException } from '../common/exception/product.exception';
 
 export type Range = {
   min: number;
@@ -10,11 +13,13 @@ export type Range = {
 };
 
 @Injectable()
-export class ProductDataAccess {
+export class ProductRepository extends BaseRepository<PersistedProductEntity> {
   constructor(
-    @InjectRepository(ProductEntity)
-    private productRepository: Repository<PersistedProductEntity>,
-  ) {}
+    protected readonly dataSource: DataSource,
+    protected readonly clsService: ClsService,
+  ) {
+    super(clsService, dataSource);
+  }
 
   /**
    *
@@ -28,8 +33,8 @@ export class ProductDataAccess {
    *    - salesRank: 판매량 순위 (1부터 시작)
    */
   async getPopularTopK(limit: number, month: number, price: Range) {
-    const popularTopProducts = await this.productRepository
-      .createQueryBuilder('p')
+    const popularTopProducts = await this.getManager()
+      .createQueryBuilder(ProductEntity, 'p')
       .select([
         'p.id AS id',
         'p.name as name',
@@ -50,5 +55,44 @@ export class ProductDataAccess {
       .getRawMany();
 
     return popularTopProducts;
+  }
+
+  async findMany(productIds: number[]) {
+    /**
+     * 상품 조회시 lock 추후 적용.
+     * 현재는 우선 트랜잭션 로직만 작성
+     */
+
+    const products = await this.getRepository(ProductEntity).find({
+      where: {
+        id: In(productIds),
+      },
+    });
+    return products;
+  }
+
+  async decreaseStocks(orderItems: OrderItemsInput[]) {
+    const updateQuries = orderItems.map((oi) =>
+      this.getRepository(ProductEntity)
+        .createQueryBuilder()
+        .update()
+        .set({
+          stocks: () => `stocks - ${oi.quantity}`,
+        })
+        .where(`id = :productId`, { productId: oi.productId })
+        .andWhere(`stocks >= :quantity`, { quantity: oi.quantity })
+        .execute(),
+    );
+    const result = await Promise.all(updateQuries);
+    const affectedRows = result
+      .map((r) => r.affected!)
+      .reduce((prev, cur) => prev + cur, 0);
+
+    if (orderItems.length !== affectedRows) {
+      throw new ProductUpdateException({
+        clientMsg:
+          '재고 업데이트에 문제가 발생했습니다. 다시 한번 시도해 주시길 바랍니다.',
+      });
+    }
   }
 }

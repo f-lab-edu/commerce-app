@@ -1,21 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, In } from 'typeorm';
 import {
   PersistedProductPriceEntity,
   ProductPriceEntity,
 } from './entity/productPrice.entity';
+import { BaseRepository } from '../common/repository/base.repository';
+import { ClsService } from 'nestjs-cls';
 
 @Injectable()
-export class ProductPriceDataAccess {
+export class ProductPriceRepository extends BaseRepository<PersistedProductPriceEntity> {
   constructor(
-    @InjectRepository(ProductPriceEntity)
-    private readonly productPriceRepository: Repository<PersistedProductPriceEntity>,
-  ) {}
+    protected readonly clsService: ClsService,
+    protected readonly dataSource: DataSource,
+  ) {
+    super(clsService, dataSource);
+  }
 
-  async findById(id: number) {
-    return await this.productPriceRepository.findOne({
-      where: { productId: id },
+  async findMany(productIds: number[]) {
+    return await this.getRepository(ProductPriceEntity).find({
+      where: {
+        productId: In(productIds),
+      },
     });
   }
 }
