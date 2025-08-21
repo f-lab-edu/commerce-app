@@ -4,9 +4,8 @@ import { OrderRequestService } from './orderRequest.service';
 import { ProductPriceService } from '../product/productPrice.service';
 import { OrderPolicyService } from './policy/order.policy';
 import { OrderRepository } from './order.repository';
-import { Transactional } from '../common/decorator/transaction.decorator';
 import { ProductService } from '../product/product.service';
-import { OrderItemsInput } from './dto/order.dto';
+import { Transactional } from '@nestjs-cls/transactional';
 
 @Injectable()
 export class OrderService {

@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PersistedProductEntity, ProductEntity } from './entity/product.entity';
-import { DataSource, In } from 'typeorm';
+import { In } from 'typeorm';
 import { OrderDetailEntity } from '../orderDetail/entity/orderDetail.entity';
-import { BaseRepository } from '../common/repository/base.repository';
-import { ClsService } from 'nestjs-cls';
 import { OrderItemsInput } from '../order/dto/order.dto';
 import { ProductUpdateException } from '../common/exception/product.exception';
+import { TransactionHost } from '@nestjs-cls/transactional';
+import { TransactionalAdapterTypeOrm } from '@nestjs-cls/transactional-adapter-typeorm';
 
 export type Range = {
   min: number;
@@ -13,13 +13,10 @@ export type Range = {
 };
 
 @Injectable()
-export class ProductRepository extends BaseRepository<PersistedProductEntity> {
+export class ProductRepository {
   constructor(
-    protected readonly dataSource: DataSource,
-    protected readonly clsService: ClsService,
-  ) {
-    super(clsService, dataSource);
-  }
+    private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+  ) {}
 
   /**
    *
@@ -33,8 +30,9 @@ export class ProductRepository extends BaseRepository<PersistedProductEntity> {
    *    - salesRank: 판매량 순위 (1부터 시작)
    */
   async getPopularTopK(limit: number, month: number, price: Range) {
-    const popularTopProducts = await this.getManager()
-      .createQueryBuilder(ProductEntity, 'p')
+    const popularTopProducts = await this.txHost.tx
+      .getRepository(ProductEntity)
+      .createQueryBuilder('p')
       .select([
         'p.id AS id',
         'p.name as name',
@@ -63,17 +61,18 @@ export class ProductRepository extends BaseRepository<PersistedProductEntity> {
      * 현재는 우선 트랜잭션 로직만 작성
      */
 
-    const products = await this.getRepository(ProductEntity).find({
+    const products = await this.txHost.tx.getRepository(ProductEntity).find({
       where: {
         id: In(productIds),
       },
     });
-    return products;
+    return products as PersistedProductEntity[];
   }
 
   async decreaseStocks(orderItems: OrderItemsInput[]) {
     const updateQuries = orderItems.map((oi) =>
-      this.getRepository(ProductEntity)
+      this.txHost.tx
+        .getRepository(ProductEntity)
         .createQueryBuilder()
         .update()
         .set({
@@ -94,5 +93,9 @@ export class ProductRepository extends BaseRepository<PersistedProductEntity> {
           '재고 업데이트에 문제가 발생했습니다. 다시 한번 시도해 주시길 바랍니다.',
       });
     }
+  }
+
+  async save(entity: unknown) {
+    return (await this.txHost.tx.save(entity)) as PersistedProductEntity[];
   }
 }
