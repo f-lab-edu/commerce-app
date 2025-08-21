@@ -6,18 +6,16 @@ import {
   IsString,
   Length,
   Min,
-  registerDecorator,
   ValidateNested,
-  ValidationOptions,
 } from 'class-validator';
 import { IBaseEntity } from '../../common/entity/base';
 import { IOrderDetail } from '../../orderDetail/entity/orderDetail.entity';
-import { IOrderEntity } from '../entity/order.entity';
 import { UserNameVO } from '../../user/vo/name.vo';
 import { AddressVO } from '../vo/address.vo';
 import { PostalCodeVO } from '../vo/postalCode.vo';
 import { IsValidTotalAmount } from '../utils/isValidTotalAmount.decorator';
 import { Type } from 'class-transformer';
+import { IOrderEntity } from '../entity/order.entity';
 
 type WithoutBaseEntity<T> = Omit<T, keyof IBaseEntity>;
 

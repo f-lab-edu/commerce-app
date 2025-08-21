@@ -3,12 +3,15 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import z from 'zod';
 
-export interface IBaseEntity {
-  id?: number;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
+export const BaseSchema = z.object({
+  id: z.number().optional(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
+});
+
+export type IBaseEntity = z.infer<typeof BaseSchema>;
 
 /**
  * TypeOrm BaseEntity와 이름중복이 있어서 'My'라는 프리픽스를 사용함

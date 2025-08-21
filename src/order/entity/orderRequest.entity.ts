@@ -54,7 +54,7 @@ export class OrderRequestEntity implements IOrderRequestEntity {
   hashedPayload: string;
 
   @Column({ type: 'json' })
-  responseBody: Record<string, string>;
+  responseBody: any;
 
   @Column({ type: 'datetime' })
   createdAt?: Date;

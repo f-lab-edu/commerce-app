@@ -1,8 +1,16 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { IBaseEntity, MyBaseEntity } from '../../common/entity/base';
 import { CommonConstraints } from '../../common/entity/base.constraints';
 import { UserEntity } from '../../user/entity/user.entity';
 import { OrderDetailEntity } from '../../orderDetail/entity/orderDetail.entity';
+import z from 'zod';
 
 export const ORDER_STATUS = {
   PENDING: 'pending',
@@ -13,24 +21,23 @@ export const ORDER_STATUS = {
   CANCELED: 'canceled',
   REFUNDED: 'refunded',
 };
-const extractOrderStatusEnum = () => Object.values(ORDER_STATUS);
-const OrderStatusEnum = extractOrderStatusEnum();
-type OrderStatus = typeof ORDER_STATUS;
-type TOrderStatus = OrderStatus[keyof OrderStatus];
+const OrderStatusValues = Object.values(ORDER_STATUS);
 
-export interface IOrderEntity extends IBaseEntity {
-  userId: number;
-  subtotal: number;
-  shippingFee: number;
-  totalAmount: number; // (상품 합계 금액 + 배송비)
-  orderStatus: TOrderStatus;
-  recipientName: string;
-  recipientPhone: string;
-  shippingAddress: string;
-  shippingDetailAddress?: string;
-  postalCode: string;
-}
-
+const OrderSchema = z.object({
+  userId: z.number(),
+  subtotal: z.number(),
+  shippingFee: z.number(),
+  totalAmount: z.number(),
+  orderStatus: z.enum(OrderStatusValues),
+  recipientName: z.string(),
+  recipientPhone: z.string(),
+  shippingAddress: z.string(),
+  postalCode: z.string(),
+  shippingDetailAddress: z.string().optional(),
+});
+type OrderEntityType = z.infer<typeof OrderSchema>;
+export type IOrderEntity = IBaseEntity & OrderEntityType;
+export type OrderParam = Omit<IOrderEntity, 'orderStatus'>;
 export type PersistedOrderEntity = Required<Omit<OrderEntity, 'orderDetails'>>;
 
 @Entity({ name: 'orders' })
@@ -45,7 +52,7 @@ export class OrderEntity extends MyBaseEntity implements IOrderEntity {
     name: 'userId',
     referencedColumnName: CommonConstraints.DB_CONSTRAINTS.ID,
   })
-  user: UserEntity;
+  user?: UserEntity;
 
   @Column({
     type: CommonConstraints.DB_CONSTRAINTS.BASIC_NUMBER,
@@ -67,10 +74,10 @@ export class OrderEntity extends MyBaseEntity implements IOrderEntity {
 
   @Column({
     type: 'enum',
-    enum: OrderStatusEnum,
+    enum: OrderStatusValues,
     default: ORDER_STATUS.PENDING,
   })
-  orderStatus: string;
+  orderStatus: string = ORDER_STATUS.PENDING;
 
   @Column({
     type: CommonConstraints.DB_CONSTRAINTS.BASIC_STRING,
@@ -99,38 +106,16 @@ export class OrderEntity extends MyBaseEntity implements IOrderEntity {
   postalCode: string;
 
   @OneToMany(() => OrderDetailEntity, (orderDetail) => orderDetail.order)
-  orderDetails: OrderDetailEntity[];
+  orderDetails?: OrderDetailEntity[];
 
-  constructor(param?: IOrderEntity) {
+  private constructor(param?: IBaseEntity) {
     super(param);
-    if (param) {
-      const {
-        orderStatus,
-        postalCode,
-        recipientName,
-        recipientPhone,
-        shippingAddress,
-        shippingFee,
-        subtotal,
-        totalAmount,
-        userId,
-        shippingDetailAddress,
-      } = param;
-
-      this.orderStatus = orderStatus;
-      this.postalCode = postalCode;
-      this.recipientName = recipientName;
-      this.recipientPhone = recipientPhone;
-      this.shippingAddress = shippingAddress;
-      this.shippingFee = shippingFee;
-      this.subtotal = subtotal;
-      this.totalAmount = totalAmount;
-      this.userId = userId;
-      this.shippingDetailAddress = shippingDetailAddress;
-    }
   }
 
-  static from(param: IOrderEntity) {
-    return new OrderEntity(param);
+  static create(param: OrderParam) {
+    const safeParsedParam = OrderSchema.parse(param);
+    const entity = new OrderEntity(param);
+    Object.assign(entity, safeParsedParam);
+    return entity;
   }
 }
