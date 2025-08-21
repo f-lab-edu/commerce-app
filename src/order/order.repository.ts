@@ -1,19 +1,17 @@
-import { Injectable, NotImplementedException } from '@nestjs/common';
-import { OrderEntity } from './entity/order.entity';
-import { DataSource } from 'typeorm';
-import { ClsService } from 'nestjs-cls';
-import { BaseRepository } from '../common/repository/base.repository';
+import { Injectable } from '@nestjs/common';
+import { OrderEntity, PersistedOrderEntity } from './entity/order.entity';
+import { TransactionHost } from '@nestjs-cls/transactional';
+import { TransactionalAdapterTypeOrm } from '@nestjs-cls/transactional-adapter-typeorm';
 
 @Injectable()
-export class OrderRepository extends BaseRepository<OrderEntity> {
+export class OrderRepository {
   constructor(
-    protected readonly dataSource: DataSource,
-    protected readonly clsService: ClsService,
-  ) {
-    super(clsService, dataSource);
-  }
+    private readonly txHost: TransactionHost<TransactionalAdapterTypeOrm>,
+  ) {}
 
-  async saveOrder() {
-    throw new NotImplementedException();
+  async saveOrder(order: OrderEntity): Promise<PersistedOrderEntity> {
+    return (await this.txHost.tx
+      .getRepository(OrderEntity)
+      .save(order)) as PersistedOrderEntity;
   }
 }

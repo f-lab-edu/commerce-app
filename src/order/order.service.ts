@@ -4,9 +4,10 @@ import { OrderRequestService } from './orderRequest.service';
 import { ProductPriceService } from '../product/productPrice.service';
 import { OrderPolicyService } from './policy/order.policy';
 import { OrderRepository } from './order.repository';
-import { Transactional } from '../common/decorator/transaction.decorator';
 import { ProductService } from '../product/product.service';
-import { OrderItemsInput } from './dto/order.dto';
+import { Transactional } from '@nestjs-cls/transactional';
+import { OrderDto } from './dto/order.dto';
+import { OrderEntity, OrderParam } from './entity/order.entity';
 
 @Injectable()
 export class OrderService {
@@ -39,18 +40,26 @@ export class OrderService {
      * 2. 재고가 충분하면 재고 감소, 재고가 충분하지 않으면 에러
      * 3. 재고가 불충분하면 롤백 및 주문 전체 취소
      */
-    await this.productService.validateAndDecreaseStocks(orderDto.orderItems);
+    const { orderItems, ...orderInfos } = orderDto;
+    await this.productService.validateAndDecreaseStocks(orderItems);
 
-    /**
-     * TODO
-     * create Order,OrderItems
-     */
-    const result = (await this.orderRepository.saveOrder()) as any; // response
+    // TODO
+    // create orderDto
+
+    const result = await this.saveOrder(orderInfos, userId);
     await this.orderRequestService.save({
       id: orderRequestId,
       orderDto,
       responseBody: result,
       userId,
     });
+  }
+  private async saveOrder(
+    orderDto: Omit<OrderDto, 'orderItems'>,
+    userId: number,
+  ) {
+    const orderParam: OrderParam = { ...orderDto, userId };
+    const order = OrderEntity.create(orderParam);
+    return await this.orderRepository.saveOrder(order);
   }
 }

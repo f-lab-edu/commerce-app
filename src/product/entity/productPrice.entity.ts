@@ -1,13 +1,7 @@
 import { Column, Entity } from 'typeorm';
-import { MyBaseEntity } from '../../common/entity/base';
+import { IBaseEntity, MyBaseEntity } from '../../common/entity/base';
 import { CommonConstraints } from '../../common/entity/base.constraints';
 import { z } from 'zod';
-
-const BaseSchema = z.object({
-  id: z.number().optional(),
-  createdAt: z.date().optional(),
-  updatedAt: z.date().optional(),
-});
 
 const ProductPriceSchema = z.object({
   productId: z.number(),
@@ -16,9 +10,8 @@ const ProductPriceSchema = z.object({
   isCurrent: z.boolean(),
 });
 
-type BaseType = z.infer<typeof BaseSchema>;
 type ProductPriceType = z.infer<typeof ProductPriceSchema>;
-type IProductPriceEntity = BaseType & ProductPriceType;
+type IProductPriceEntity = IBaseEntity & ProductPriceType;
 export type PersistedProductPriceEntity = Required<IProductPriceEntity>;
 
 @Entity({ name: 'product_prices' })
@@ -48,7 +41,7 @@ export class ProductPriceEntity
   })
   isCurrent: boolean;
 
-  private constructor(param?: BaseType) {
+  private constructor(param?: IBaseEntity) {
     super(param);
   }
 
