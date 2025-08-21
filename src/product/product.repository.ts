@@ -56,14 +56,12 @@ export class ProductRepository {
   }
 
   async findMany(productIds: number[]) {
-    /**
-     * 상품 조회시 lock 추후 적용.
-     * 현재는 우선 트랜잭션 로직만 작성
-     */
-
     const products = await this.txHost.tx.getRepository(ProductEntity).find({
       where: {
         id: In(productIds),
+      },
+      lock: {
+        mode: 'pessimistic_write',
       },
     });
     return products as PersistedProductEntity[];
